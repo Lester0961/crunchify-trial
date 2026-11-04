@@ -23,6 +23,25 @@ try {
   assert.equal(response.status(), 307);
   const invalid = await page.request.post(`${base}/api/inquiries`, { data: { type: "wholesale" } });
   assert.equal(invalid.status(), 400);
+  await page.evaluate(() => sessionStorage.removeItem("crunchify_attribution"));
+  await page.goto(`${base}/?utm_source=smoke-test&utm_campaign=trial`);
+  await page.getByRole("link", { name: "Become a Wholesale Partner" }).first().click();
+  let submitted;
+  await page.route("**/api/inquiries", async route => {
+    submitted = route.request().postDataJSON();
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, notificationPending: false }) });
+  });
+  for (const [name, value] of Object.entries({ company: "Test company", contact: "Test person", email: "test@example.invalid", phone: "1234567", territory: "Test", volume: "100", message: "Synthetic browser test" })) {
+    await page.locator(`[name="${name}"]`).fill(value);
+  }
+  await page.locator('[name="businessType"]').selectOption("Retailer");
+  await page.locator('[value="banana-crunch"]').check();
+  await page.getByRole("button", { name: "Send inquiry" }).click();
+  await page.getByText("Your inquiry has been saved.").waitFor();
+  assert.equal(submitted.source, "/");
+  assert.equal(submitted.utm.utm_source, "smoke-test");
+  assert.equal(submitted.utm.utm_campaign, "trial");
+  assert.deepEqual(submitted.products, ["banana-crunch"]);
   console.log("Responsive and critical route smoke checks passed.");
 } finally {
   await browser.close();
