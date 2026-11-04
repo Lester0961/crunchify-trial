@@ -31,7 +31,8 @@ export function InquiryForm({ type, initialProduct = "" }: { type: "wholesale" |
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please try again."); setState("error"); }
   }
   if (state === "success") return <div className="success" role="status"><h2>Thank you for getting in touch.</h2><p>Your inquiry has been saved.</p>{notificationPending && <p>We couldn’t send all email notifications right now. For urgent follow-up, please contact us through our <a className="text-link" href="https://instagram.com/crunchify.eats">Instagram page</a>.</p>}</div>;
-  return <form className="inquiry-form" onSubmit={submit}>
+  return <form className="inquiry-form" method="post" action="/api/inquiries" onSubmit={submit}>
+    <noscript><p className="form-error">Please enable JavaScript to send this inquiry.</p></noscript>
     <div className="form-grid">
       <label>Company name<input name="company" required maxLength={150} autoComplete="organization" /></label>
       <label>Contact person<input name="contact" required maxLength={120} autoComplete="name" /></label>

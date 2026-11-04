@@ -42,6 +42,13 @@ try {
   assert.equal(submitted.utm.utm_source, "smoke-test");
   assert.equal(submitted.utm.utm_campaign, "trial");
   assert.deepEqual(submitted.products, ["banana-crunch"]);
+  const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+  const noJsPage = await noJs.newPage();
+  await noJsPage.goto(`${base}/inquire`);
+  assert.equal(await noJsPage.locator("form.inquiry-form").getAttribute("method"), "post");
+  assert.equal(await noJsPage.locator("form.inquiry-form").getAttribute("action"), "/api/inquiries");
+  assert.match(await noJsPage.locator("noscript").innerText(), /enable JavaScript/i);
+  await noJs.close();
   console.log("Responsive and critical route smoke checks passed.");
 } finally {
   await browser.close();
