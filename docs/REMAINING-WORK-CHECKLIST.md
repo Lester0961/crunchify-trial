@@ -77,3 +77,5 @@
 - [x] Extended the isolated browser/database test to verify the separate brand/media submission, honeypot rejection, a ten-request rate limit, and denial of admin access and writes with an expired signed session. This does not replace testing with the final company email configuration.
 
 - [x] Limited inquiry request bodies while streaming, including when Content-Length is missing or misleading. Integration checks cover chunked and multibyte input; a local chunked HTTP request returned 413, and isolated wholesale/partner flows still passed.
+
+- [x] Applied streamed size limits to staff sign-in and inquiry-update forms. An isolated test verified ordinary sign-in, admin updates, a 5,000-character Unicode note, oversized requests and unsupported content types. The protected preview rejected an oversized login, and live mobile/desktop sign-in and sign-out smoke checks passed after deployment.
