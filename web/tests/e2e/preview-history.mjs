@@ -25,6 +25,9 @@ try {
   await page.getByRole("button", { name: "Save changes" }).click();
   await page.getByText("Status: new → contacted").waitFor();
   await page.getByText("Updated note: Synthetic deployment history test").waitFor();
+  await page.locator('[name="note"]').fill("W".repeat(5000));
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await page.getByText("Previous note: Synthetic deployment history test").waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, "mobile overflow");
   const cookie = (await context.cookies()).find((item) => item.name === "crunchify_admin");
   assert.ok(cookie, "Admin cookie missing");

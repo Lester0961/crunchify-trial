@@ -103,6 +103,9 @@ try {
   await page.getByRole("button", { name: "Save changes" }).click();
   const unicodeUpdate = await db.query(`SELECT internal_note FROM ${schema}.inquiries WHERE id=$1`, [id]);
   assert.equal(unicodeUpdate.rows[0].internal_note, longNote);
+  await page.locator('[name="note"]').fill("W".repeat(5000));
+  await page.getByRole("button", { name: "Save changes" }).click();
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, "Long history notes must not overflow mobile");
   const originalCookie = (await page.context().cookies()).find((cookie) => cookie.name === "crunchify_admin");
   assert.ok(originalCookie, "Admin session cookie missing");
   const copiedContext = await browser.newContext();
