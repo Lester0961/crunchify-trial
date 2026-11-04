@@ -27,6 +27,7 @@
 - [ ] Recheck admin search, type/status filters, counts, inquiry details, notes, status updates and email-retry warning on mobile and desktop. Test recovery after a provider failure using the final provider settings.
 - [ ] Establish full preview/production isolation with separate databases and restricted credentials, or agree a company-approved strategy. New preview deployments now use a separate schema and restricted credential but share the same database. Older previews can retain the former production credential until it is rotated.
 - [ ] Establish and test a database backup and restore process. Set appropriate account permissions, retention and operational ownership.
+- [x] Create an encrypted local live backup with a read-only role and verify its archive listing. A separate synthetic encrypted archive was restored successfully on 5 November; the live archive still requires a safe restore rehearsal, a company-controlled off-device copy, scheduling, retention and an owner.
 - [ ] Rotate and securely hand over staff credentials, API keys and session secret. Remove old temporary admin-test files from the Windows Temp folder; prior protected deployments can retain earlier configuration.
 
 ## Responsive, accessibility, SEO, and performance

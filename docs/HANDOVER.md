@@ -41,3 +41,5 @@ The schema and safe product seed are in `web/database/`; do not run setup script
 The original agreement supplies the formal ten-working-day conditions and makes bonus acceptance company-dependent. The internal five-day target does not alter those terms.
 
 The current production code connects with the restricted production role using certificate-verified TLS. The older broad `DATABASE_URL` remains in the Production environment as a rollback safeguard and can still be read by production runtime code; older deployments can also retain it. This is not complete credential isolation. Once the owner is ready, plan a verified removal and rotation of the former database credential and assess rollback implications. Supabase Free does not provide automatic backups; see `BACKUP-RESTORE.md`.
+
+A manual encrypted live backup was created on 5 November Manila time and its listing verified. It is bound to the current Windows user and is not an off-device or scheduled backup. A synthetic encrypted archive restored successfully; a production-data restoration rehearsal and company-controlled recovery arrangements are still needed.
