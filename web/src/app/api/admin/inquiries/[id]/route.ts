@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { isAdmin } from "@/server/security/admin";
 import { database } from "@/server/db";
 import { readLimitedBody } from "@/server/security/read-limited-body";
+import { sameOriginUrl } from "@/server/security/request-origin";
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const url = new URL(request.url);
-  if (request.headers.get("origin") !== url.origin || !(await isAdmin())) return new Response("Forbidden", { status: 403 });
+  const url = sameOriginUrl(request);
+  if (!url || !(await isAdmin())) return new Response("Forbidden", { status: 403 });
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) return new Response("Invalid ID", { status: 400 });
   if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/x-www-form-urlencoded") return new Response("Unsupported request", { status: 415 });

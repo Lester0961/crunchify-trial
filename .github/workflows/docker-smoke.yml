@@ -53,10 +53,18 @@ jobs:
           code=$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" http://localhost:3000/admin)
           echo "Authenticated admin HTTP $code"
           test "$code" = 200
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" -H 'Origin: https://attacker.example' --data-urlencode 'status=closed' "http://localhost:3000/api/admin/inquiries/$id")
+          test "$code" = 403
           code=$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" -H 'Origin: http://localhost:3000' --data-urlencode 'status=contacted' --data-urlencode 'note=Synthetic test' "http://localhost:3000/api/admin/inquiries/$id")
           echo "Admin update HTTP $code"
           test "$code" = 303
           test "$(docker exec crunchify-ci-db psql -U postgres -d crunchify -tAc "SELECT status FROM crunchify_private.inquiries WHERE id='$id'")" = contacted
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" -H 'Origin: http://localhost:3000' -X POST "http://localhost:3000/api/admin/inquiries/$id/retry")
+          test "$code" = 303
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" -c "$RUNNER_TEMP/cookies" -H 'Origin: http://localhost:3000' -X POST http://localhost:3000/api/admin/logout)
+          test "$code" = 303
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" http://localhost:3000/admin)
+          test "$code" = 307
           echo 'Docker build, non-root runtime, inquiry persistence, and admin update passed.'
       - name: Show test container logs on failure
         if: failure()
