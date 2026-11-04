@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdmin } from "@/server/security/admin";
-import { database } from "@/server/db";
+import { database, databaseSchema } from "@/server/db";
 export const metadata = { title: "Inquiries" };
 export default async function Admin({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; type?: string }> }) {
   if (!(await isAdmin())) redirect("/admin/login");
@@ -10,13 +10,14 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   const status = ["new", "contacted", "closed"].includes(params.status || "") ? params.status : "";
   const type = ["wholesale", "partner"].includes(params.type || "") ? params.type : "";
   const db = database();
+  const schema = databaseSchema();
   const [result, totals] = await Promise.all([
     db.query(`SELECT id, kind, status, created_at, sender_email_status, company_email_status, details->>'company' AS company, details->>'contact' AS contact
-      FROM crunchify_private.inquiries
+      FROM ${schema}.inquiries
       WHERE ($1::text = '' OR position(lower($1) in lower(coalesce(details->>'company','') || ' ' || coalesce(details->>'contact',''))) > 0)
         AND ($2::text = '' OR status = $2) AND ($3::text = '' OR kind = $3)
       ORDER BY created_at DESC LIMIT 200`, [q, status, type]),
-    db.query("SELECT count(*)::int AS total, count(*) FILTER (WHERE status='new')::int AS new, count(*) FILTER (WHERE status='contacted')::int AS contacted, count(*) FILTER (WHERE sender_email_status <> 'accepted' OR company_email_status <> 'accepted')::int AS email_attention FROM crunchify_private.inquiries"),
+    db.query(`SELECT count(*)::int AS total, count(*) FILTER (WHERE status='new')::int AS new, count(*) FILTER (WHERE status='contacted')::int AS contacted, count(*) FILTER (WHERE sender_email_status <> 'accepted' OR company_email_status <> 'accepted')::int AS email_attention FROM ${schema}.inquiries`),
   ]);
   const count = totals.rows[0];
   return <main className="shell page-section"><div className="admin-heading"><div><p className="eyebrow">Staff workspace</p><h1>Partnership inquiries</h1><p className="page-intro">A simple space to follow up.</p></div><form method="post" action="/api/admin/logout"><button className="header-action">Sign out</button></form></div>

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/server/security/admin";
-import { database } from "@/server/db";
+import { database, databaseSchema } from "@/server/db";
 import { readLimitedBody } from "@/server/security/read-limited-body";
 import { sameOriginUrl } from "@/server/security/request-origin";
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -16,6 +16,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const status = String(form.get("status"));
   const note = String(form.get("note") || "");
   if (!["new", "contacted", "closed"].includes(status) || note.length > 5000) return new Response("Invalid data", { status: 400 });
-  await database().query("UPDATE crunchify_private.inquiries SET status=$2, internal_note=$3 WHERE id=$1", [id, status, note]);
+  await database().query(`UPDATE ${databaseSchema()}.inquiries SET status=$2, internal_note=$3 WHERE id=$1`, [id, status, note]);
   return NextResponse.redirect(new URL(`/admin/inquiries/${id}`, url), 303);
 }

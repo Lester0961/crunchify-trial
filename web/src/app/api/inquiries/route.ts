@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { inquirySchema } from "@/features/inquiries/schema";
-import { database } from "@/server/db";
+import { database, databaseSchema } from "@/server/db";
 import { sendEmails } from "@/server/email/send";
 import { readLimitedBody } from "@/server/security/read-limited-body";
 
@@ -16,18 +16,19 @@ export async function POST(request: Request) {
   const data = parsed.data;
   try {
     const db = database();
+    const schema = databaseSchema();
     const ip = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const key = createHash("sha256").update(ip).digest("hex");
-    const limit = await db.query(`INSERT INTO crunchify_private.rate_limits (key,count,window_start) VALUES ($1,1,now())
-      ON CONFLICT (key) DO UPDATE SET count = CASE WHEN crunchify_private.rate_limits.window_start < now() - interval '1 hour' THEN 1 ELSE crunchify_private.rate_limits.count + 1 END,
-      window_start = CASE WHEN crunchify_private.rate_limits.window_start < now() - interval '1 hour' THEN now() ELSE crunchify_private.rate_limits.window_start END RETURNING count`, [key]);
+    const limit = await db.query(`INSERT INTO ${schema}.rate_limits (key,count,window_start) VALUES ($1,1,now())
+      ON CONFLICT (key) DO UPDATE SET count = CASE WHEN ${schema}.rate_limits.window_start < now() - interval '1 hour' THEN 1 ELSE ${schema}.rate_limits.count + 1 END,
+      window_start = CASE WHEN ${schema}.rate_limits.window_start < now() - interval '1 hour' THEN now() ELSE ${schema}.rate_limits.window_start END RETURNING count`, [key]);
     if (limit.rows[0].count > 10) return Response.json({ error: "Too many attempts. Please try again later." }, { status: 429 });
-    const saved = await db.query("INSERT INTO crunchify_private.inquiries (id,kind,details) VALUES ($1,$2,$3) ON CONFLICT (id) DO NOTHING RETURNING id", [data.submissionId, data.type, JSON.stringify(data)]);
+    const saved = await db.query(`INSERT INTO ${schema}.inquiries (id,kind,details) VALUES ($1,$2,$3) ON CONFLICT (id) DO NOTHING RETURNING id`, [data.submissionId, data.type, JSON.stringify(data)]);
     if (saved.rowCount) {
       const delivery = await sendEmails(data);
-      await db.query("UPDATE crunchify_private.inquiries SET sender_email_status=$2, company_email_status=$3 WHERE id=$1", [data.submissionId, delivery.sender ? "accepted" : "failed", delivery.company ? "accepted" : "failed"]);
+      await db.query(`UPDATE ${schema}.inquiries SET sender_email_status=$2, company_email_status=$3 WHERE id=$1`, [data.submissionId, delivery.sender ? "accepted" : "failed", delivery.company ? "accepted" : "failed"]);
     }
-    const existing = await db.query("SELECT details = $2::jsonb AS same_content, sender_email_status, company_email_status FROM crunchify_private.inquiries WHERE id=$1", [data.submissionId, JSON.stringify(data)]);
+    const existing = await db.query(`SELECT details = $2::jsonb AS same_content, sender_email_status, company_email_status FROM ${schema}.inquiries WHERE id=$1`, [data.submissionId, JSON.stringify(data)]);
     if (!existing.rows[0]?.same_content) return Response.json({ error: "Your previous attempt was saved with different details. Please submit the updated inquiry again." }, { status: 409 });
     const result = existing.rows[0];
     return Response.json({ ok: true, notificationPending: result.sender_email_status !== "accepted" || result.company_email_status !== "accepted" });

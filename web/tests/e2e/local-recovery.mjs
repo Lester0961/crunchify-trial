@@ -8,6 +8,8 @@ const base = new URL(process.env.TEST_BASE_URL || "http://localhost:3127");
 const databaseUrl = new URL(process.env.TEST_DATABASE_URL || "postgresql://crunchify_test@127.0.0.1:59255/source_test");
 const local = (hostname) => ["127.0.0.1", "localhost", "::1", "[::1]"].includes(hostname);
 assert.ok(local(base.hostname) && local(databaseUrl.hostname), "Recovery test requires an isolated local app and database");
+const schema = process.env.TEST_DATABASE_SCHEMA || "crunchify_private";
+assert.ok(["crunchify_private", "crunchify_preview"].includes(schema), "Unexpected test schema");
 const db = new pg.Client({ connectionString: databaseUrl.toString() });
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe" });
 const company = `Synthetic recovery ${randomUUID()}`;
@@ -31,13 +33,17 @@ try {
   await page.getByRole("button", { name: "Send inquiry" }).click();
   await page.getByText("Your inquiry has been saved.").waitFor();
   await page.getByText(/couldn’t send all email notifications/).waitFor();
-  const saved = await db.query("SELECT id, details, sender_email_status, company_email_status FROM crunchify_private.inquiries WHERE details->>'company'=$1", [company]);
+  const saved = await db.query(`SELECT id, details, sender_email_status, company_email_status FROM ${schema}.inquiries WHERE details->>'company'=$1`, [company]);
   assert.equal(saved.rowCount, 1);
   ({ id } = saved.rows[0]);
   assert.equal(saved.rows[0].details.utm.utm_source, "recovery-test");
   assert.deepEqual(saved.rows[0].details.products, ["banana-crunch"]);
   assert.equal(saved.rows[0].sender_email_status, "failed");
   assert.equal(saved.rows[0].company_email_status, "failed");
+  if (schema === "crunchify_preview") {
+    const production = await db.query("SELECT count(*)::int AS count FROM crunchify_private.inquiries WHERE details->>'company'=$1", [company]);
+    assert.equal(production.rows[0].count, 0, "Preview inquiry must not appear in production");
+  }
   const honeypot = await page.request.post(`${base.origin}/api/inquiries`, { data: { ...saved.rows[0].details, submissionId: randomUUID(), website: "spam" } });
   assert.equal(honeypot.status(), 400);
   for (let attempt = 1; attempt <= 11; attempt++) {
@@ -52,7 +58,7 @@ try {
   }
   await page.getByRole("button", { name: "Send inquiry" }).click();
   await page.getByText("Your inquiry has been saved.").waitFor();
-  const partner = await db.query("SELECT kind, details FROM crunchify_private.inquiries WHERE details->>'company'=$1", [partnerCompany]);
+  const partner = await db.query(`SELECT kind, details FROM ${schema}.inquiries WHERE details->>'company'=$1`, [partnerCompany]);
   assert.equal(partner.rowCount, 1);
   assert.equal(partner.rows[0].kind, "partner");
   assert.equal(partner.rows[0].details.businessType, "Media");
@@ -82,20 +88,20 @@ try {
   await page.locator('[name="status"]').selectOption("contacted");
   await page.locator('[name="note"]').fill("Synthetic recovery note");
   await page.getByRole("button", { name: "Save changes" }).click();
-  const updated = await db.query("SELECT status, internal_note FROM crunchify_private.inquiries WHERE id=$1", [id]);
+  const updated = await db.query(`SELECT status, internal_note FROM ${schema}.inquiries WHERE id=$1`, [id]);
   assert.deepEqual(updated.rows[0], { status: "contacted", internal_note: "Synthetic recovery note" });
   const hugeUpdate = await page.request.post(`${base.origin}/api/admin/inquiries/${id}`, { headers: { origin: base.origin, "content-type": "application/x-www-form-urlencoded" }, data: "x".repeat(65537) });
   assert.equal(hugeUpdate.status(), 413);
   const longNote = "界".repeat(5000);
   await page.locator('[name="note"]').fill(longNote);
   await page.getByRole("button", { name: "Save changes" }).click();
-  const unicodeUpdate = await db.query("SELECT internal_note FROM crunchify_private.inquiries WHERE id=$1", [id]);
+  const unicodeUpdate = await db.query(`SELECT internal_note FROM ${schema}.inquiries WHERE id=$1`, [id]);
   assert.equal(unicodeUpdate.rows[0].internal_note, longNote);
   console.log("Isolated wholesale and partner persistence, spam/rate limits, expired session, email failure and admin retry/update passed.");
 } finally {
-  if (id) await db.query("DELETE FROM crunchify_private.inquiries WHERE id=$1 AND details->>'company'=$2", [id, company]);
-  await db.query("DELETE FROM crunchify_private.inquiries WHERE details->>'company'=$1", [partnerCompany]);
-  await db.query("DELETE FROM crunchify_private.rate_limits WHERE key = ANY($1::text[])", [[rateKey, browserKey, `admin:${browserKey}`]]);
+  if (id) await db.query(`DELETE FROM ${schema}.inquiries WHERE id=$1 AND details->>'company'=$2`, [id, company]);
+  await db.query(`DELETE FROM ${schema}.inquiries WHERE details->>'company'=$1`, [partnerCompany]);
+  await db.query(`DELETE FROM ${schema}.rate_limits WHERE key = ANY($1::text[])`, [[rateKey, browserKey, `admin:${browserKey}`]]);
   await db.end();
   await browser.close();
 }

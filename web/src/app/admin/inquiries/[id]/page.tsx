@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { isAdmin } from "@/server/security/admin";
-import { database } from "@/server/db";
+import { database, databaseSchema } from "@/server/db";
 export default async function InquiryDetail({ params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdmin())) redirect("/admin/login");
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
-  const result = await database().query("SELECT * FROM crunchify_private.inquiries WHERE id=$1", [id]);
+  const result = await database().query(`SELECT * FROM ${databaseSchema()}.inquiries WHERE id=$1`, [id]);
   const inquiry = result.rows[0];
   if (!inquiry) notFound();
   const d = inquiry.details;

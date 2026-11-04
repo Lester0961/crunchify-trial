@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { adminCookie, checkCredentials, makeSession } from "@/server/security/admin";
-import { database } from "@/server/db";
+import { database, databaseSchema } from "@/server/db";
 import { readLimitedBody } from "@/server/security/read-limited-body";
 import { sameOriginUrl } from "@/server/security/request-origin";
 export async function POST(request: Request) {
@@ -15,11 +15,12 @@ export async function POST(request: Request) {
   const username = String(form.get("username") || "").slice(0, 200);
   const password = String(form.get("password") || "").slice(0, 512);
   try {
+    const schema = databaseSchema();
     const ip = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const key = "admin:" + createHash("sha256").update(ip).digest("hex");
-    const result = await database().query(`INSERT INTO crunchify_private.rate_limits (key,count,window_start) VALUES ($1,1,now())
-      ON CONFLICT (key) DO UPDATE SET count=CASE WHEN crunchify_private.rate_limits.window_start < now() - interval '15 minutes' THEN 1 ELSE crunchify_private.rate_limits.count+1 END,
-      window_start=CASE WHEN crunchify_private.rate_limits.window_start < now() - interval '15 minutes' THEN now() ELSE crunchify_private.rate_limits.window_start END RETURNING count`, [key]);
+    const result = await database().query(`INSERT INTO ${schema}.rate_limits (key,count,window_start) VALUES ($1,1,now())
+      ON CONFLICT (key) DO UPDATE SET count=CASE WHEN ${schema}.rate_limits.window_start < now() - interval '15 minutes' THEN 1 ELSE ${schema}.rate_limits.count+1 END,
+      window_start=CASE WHEN ${schema}.rate_limits.window_start < now() - interval '15 minutes' THEN now() ELSE ${schema}.rate_limits.window_start END RETURNING count`, [key]);
     if (result.rows[0].count > 10 || !checkCredentials(username, password)) return NextResponse.redirect(new URL("/admin/login?error=1", url), 303);
     const response = NextResponse.redirect(new URL("/admin", url), 303);
     response.cookies.set(adminCookie, makeSession(), { httpOnly: true, secure: url.protocol === "https:", sameSite: "strict", path: "/", maxAge: 8 * 60 * 60 });
