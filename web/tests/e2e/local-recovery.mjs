@@ -31,6 +31,13 @@ try {
   }
   await page.locator('[name="businessType"]').selectOption("Retailer");
   await page.locator('[value="banana-crunch"]').check();
+  await page.locator('[name="company"]').fill("   ");
+  await page.getByRole("button", { name: "Send inquiry" }).click();
+  await page.getByText("Enter your company name.").waitFor();
+  assert.equal(await page.locator('[name="company"]').getAttribute("aria-invalid"), "true");
+  assert.equal(await page.locator('[name="company"]').getAttribute("aria-describedby"), "company-error");
+  assert.equal(await page.locator('[name="contact"]').inputValue(), "Test person", "Other fields remain filled after validation");
+  await page.locator('[name="company"]').fill(company);
   await page.getByRole("button", { name: "Send inquiry" }).click();
   await page.getByText("Your inquiry has been saved.").waitFor();
   await page.getByText(/couldn’t send all email notifications/).waitFor();
@@ -51,12 +58,18 @@ try {
     const response = await page.request.post(`${base.origin}/api/inquiries`, { headers: { "x-real-ip": rateIp }, data: saved.rows[0].details });
     assert.equal(response.status(), attempt <= 10 ? 200 : 429, `rate limit at attempt ${attempt}`);
   }
-  const conflict = await page.request.post(`${base.origin}/api/inquiries`, { data: { ...saved.rows[0].details, message: "Different details" } });
+  const conflict = await page.request.post(`${base.origin}/api/inquiries`, { headers: { "x-real-ip": browserIp }, data: { ...saved.rows[0].details, message: "Different details" } });
   assert.equal(conflict.status(), 409);
   await page.goto(`${base.origin}/partners`);
   for (const [name, value] of Object.entries({ company: partnerCompany, contact: "Test person", email: "test@example.invalid", businessType: "Media", message: "Isolated partner test" })) {
     await page.locator(`[name="${name}"]`).fill(value);
   }
+  await page.locator('[name="message"]').fill("   ");
+  await page.getByRole("button", { name: "Send inquiry" }).click();
+  await page.getByText("Enter a message.").waitFor();
+  assert.equal(await page.locator('[name="message"]').getAttribute("aria-describedby"), "message-error");
+  assert.equal(await page.locator('[name="company"]').inputValue(), partnerCompany);
+  await page.locator('[name="message"]').fill("Isolated partner test");
   await page.getByRole("button", { name: "Send inquiry" }).click();
   await page.getByText("Your inquiry has been saved.").waitFor();
   const partner = await db.query(`SELECT kind, details FROM ${schema}.inquiries WHERE details->>'company'=$1`, [partnerCompany]);
