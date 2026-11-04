@@ -5,11 +5,12 @@ import { sendEmails } from "@/server/email/send";
 import { updateDeliveryStatus } from "@/server/email/delivery-status";
 import { isAdmin } from "@/server/security/admin";
 import { sameOriginUrl } from "@/server/security/request-origin";
+import { isInquiryId } from "@/server/security/inquiry-id";
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const url = sameOriginUrl(request);
   if (!url || !(await isAdmin())) return new Response("Forbidden", { status: 403 });
   const { id } = await params;
-  if (!/^[0-9a-f-]{36}$/i.test(id)) return new Response("Invalid ID", { status: 400 });
+  if (!isInquiryId(id)) return new Response("Invalid ID", { status: 400 });
   const db = database();
   const schema = databaseSchema();
   const result = await db.query(`SELECT details, sender_email_status, company_email_status FROM ${schema}.inquiries WHERE id=$1`, [id]);
