@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { chromium } from "playwright-core";
 
 const base = new URL(process.env.TEST_BASE_URL || "");
-assert.ok(["crunchify-trial-n4dbt96hs-lesters-projects-17d9e437.vercel.app", "crunchify.vercel.app"].includes(base.hostname), "Unexpected test host");
+assert.ok(base.protocol === "https:" && (base.hostname === "crunchify.vercel.app" || /^crunchify-trial-[a-z0-9]+-lesters-projects-17d9e437\.vercel\.app$/.test(base.hostname)), "Unexpected test host");
 if (base.hostname !== "crunchify.vercel.app") assert.ok(process.env.VERCEL_OIDC_TOKEN, "A short-lived Vercel token is required");
 const credentials = await readFile(".env.admin-credentials", "utf8");
 const username = credentials.match(/^Username\s*:\s*(.+)$/m)?.[1]?.trim();
@@ -26,7 +26,19 @@ try {
   await page.getByText("Status: new → contacted").waitFor();
   await page.getByText("Updated note: Synthetic deployment history test").waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, "mobile overflow");
-  console.log("Admin update and mobile history display passed.");
+  const cookie = (await context.cookies()).find((item) => item.name === "crunchify_admin");
+  assert.ok(cookie, "Admin cookie missing");
+  const copied = await browser.newContext({ extraHTTPHeaders: base.hostname === "crunchify.vercel.app" ? {} : { "x-vercel-trusted-oidc-idp-token": process.env.VERCEL_OIDC_TOKEN } });
+  await copied.addCookies([cookie]);
+  const copyPage = await copied.newPage();
+  assert.equal((await copyPage.request.get(`${base.origin}/admin`, { maxRedirects: 0 })).status(), 200);
+  await page.goto(`${base.origin}/admin`);
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await page.waitForURL("**/admin/login");
+  assert.equal((await copyPage.request.get(`${base.origin}/admin`, { maxRedirects: 0 })).status(), 307);
+  assert.equal((await copyPage.request.post(`${base.origin}/api/admin/inquiries/ed8a4b34-6d89-44f1-b29b-6d7905fd823c`, { headers: { origin: base.origin }, form: { status: "closed", note: "Revoked" } })).status(), 403);
+  await copied.close();
+  console.log("Admin history and copied-session revocation passed on mobile.");
 } finally {
   await browser.close();
 }

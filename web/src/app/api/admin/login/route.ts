@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       window_start=CASE WHEN ${schema}.rate_limits.window_start < now() - interval '15 minutes' THEN now() ELSE ${schema}.rate_limits.window_start END RETURNING count`, [key]);
     if (result.rows[0].count > 10 || !checkCredentials(username, password)) return NextResponse.redirect(new URL("/admin/login?error=1", url), 303);
     const response = NextResponse.redirect(new URL("/admin", url), 303);
-    response.cookies.set(adminCookie, makeSession(), { httpOnly: true, secure: url.protocol === "https:", sameSite: "strict", path: "/", maxAge: 8 * 60 * 60 });
+    response.cookies.set(adminCookie, await makeSession(), { httpOnly: true, secure: url.protocol === "https:", sameSite: "strict", path: "/", maxAge: 8 * 60 * 60 });
     return response;
   } catch { return NextResponse.redirect(new URL("/admin/login?error=1", url), 303); }
 }

@@ -103,6 +103,18 @@ try {
   await page.getByRole("button", { name: "Save changes" }).click();
   const unicodeUpdate = await db.query(`SELECT internal_note FROM ${schema}.inquiries WHERE id=$1`, [id]);
   assert.equal(unicodeUpdate.rows[0].internal_note, longNote);
+  const originalCookie = (await page.context().cookies()).find((cookie) => cookie.name === "crunchify_admin");
+  assert.ok(originalCookie, "Admin session cookie missing");
+  const copiedContext = await browser.newContext();
+  await copiedContext.addCookies([originalCookie]);
+  const copiedPage = await copiedContext.newPage();
+  assert.equal((await copiedPage.request.get(`${base.origin}/admin`, { maxRedirects: 0 })).status(), 200);
+  await page.goto(`${base.origin}/admin`);
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await page.waitForURL("**/admin/login");
+  assert.equal((await copiedPage.request.get(`${base.origin}/admin`, { maxRedirects: 0 })).status(), 307);
+  assert.equal((await copiedPage.request.post(`${base.origin}/api/admin/inquiries/${id}`, { headers: { origin: base.origin }, form: { status: "closed", note: "Revoked" } })).status(), 403);
+  await copiedContext.close();
   console.log("Isolated wholesale and partner persistence, spam/rate limits, expired session, email failure and admin retry/update passed.");
 } finally {
   if (id) await db.query(`DELETE FROM ${schema}.inquiries WHERE id=$1 AND details->>'company'=$2`, [id, company]);
