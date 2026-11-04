@@ -1,0 +1,59 @@
+name: Docker portability smoke test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docker-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Build and exercise Docker image with disposable PostgreSQL
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create crunchify-ci
+          docker run -d --name crunchify-ci-db --network crunchify-ci \
+            -e POSTGRES_PASSWORD=local-test-only -e POSTGRES_DB=crunchify postgres:17-alpine
+          for attempt in {1..40}; do
+            if docker exec crunchify-ci-db psql -U postgres -d crunchify -tAc 'SELECT 1' >/dev/null 2>&1; then break; fi
+            if [ "$attempt" = 40 ]; then echo 'PostgreSQL did not become ready'; exit 1; fi
+            sleep 2
+          done
+          docker exec -i crunchify-ci-db psql -U postgres -d crunchify -v ON_ERROR_STOP=1 < web/database/migrations/001_inquiries.sql
+          docker exec -i crunchify-ci-db psql -U postgres -d crunchify -v ON_ERROR_STOP=1 < web/database/seed/001_products.sql
+          docker build -t crunchify-ci web
+          hash=$(node -e "const c=require('crypto');process.stdout.write('test-salt:'+c.scryptSync('test-password','test-salt',64).toString('hex'))")
+          docker run -d --name crunchify-ci-app --network crunchify-ci -p 127.0.0.1:3000:3000 \
+            -e DATABASE_URL='postgresql://postgres:local-test-only@crunchify-ci-db:5432/crunchify' \
+            -e ADMIN_USER=test -e ADMIN_PASSWORD_HASH="$hash" \
+            -e ADMIN_SESSION_SECRET='isolated-ci-session-secret-0123456789abcdef' crunchify-ci
+          test "$(docker exec crunchify-ci-app id -u)" != 0
+          for attempt in {1..40}; do
+            if curl -fsS http://localhost:3000/ -o /dev/null; then break; fi
+            if [ "$attempt" = 40 ]; then docker logs crunchify-ci-app; exit 1; fi
+            sleep 2
+          done
+          curl -fsS http://localhost:3000/brand/banana-pack.webp -o /dev/null
+          id=$(node -e "process.stdout.write(require('crypto').randomUUID())")
+          jq -n --arg id "$id" '{type:"wholesale",company:"Synthetic Docker test",contact:"Test",email:"test@example.invalid",phone:"1234567",businessType:"Retailer",territory:"Test",volume:"100",products:["banana-crunch"],message:"Disposable test",website:"",source:"/",utm:{utm_source:"docker-ci"},submissionId:$id}' > "$RUNNER_TEMP/inquiry.json"
+          curl -fsS -H 'Content-Type: application/json' --data-binary @"$RUNNER_TEMP/inquiry.json" http://localhost:3000/api/inquiries | jq -e '.ok == true and .notificationPending == true' >/dev/null
+          test "$(docker exec crunchify-ci-db psql -U postgres -d crunchify -tAc "SELECT count(*) FROM crunchify_private.inquiries WHERE id='$id' AND details->'utm'->>'utm_source'='docker-ci'")" = 1
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -c "$RUNNER_TEMP/cookies" -H 'Origin: http://localhost:3000' --data-urlencode 'username=test' --data-urlencode 'password=test-password' http://localhost:3000/api/admin/login)
+          test "$code" = 303
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" http://localhost:3000/admin)
+          test "$code" = 200
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" -H 'Origin: http://localhost:3000' --data-urlencode 'status=contacted' --data-urlencode 'note=Synthetic test' "http://localhost:3000/api/admin/inquiries/$id")
+          test "$code" = 303
+          test "$(docker exec crunchify-ci-db psql -U postgres -d crunchify -tAc "SELECT status FROM crunchify_private.inquiries WHERE id='$id'")" = contacted
+          echo 'Docker build, non-root runtime, inquiry persistence, and admin update passed.'
+      - name: Remove disposable containers
+        if: always()
+        run: |
+          docker rm -f crunchify-ci-app crunchify-ci-db 2>/dev/null || true
+          docker network rm crunchify-ci 2>/dev/null || true
