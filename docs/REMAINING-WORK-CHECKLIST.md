@@ -39,6 +39,7 @@
 
 - [x] Check 11 public and admin-entry routes at 320, 390, 768, 1024 and 1440 px for successful responses and horizontal overflow; inspect the refreshed homepage at mobile and desktop sizes. Continue real-device and full-state review below.
 - [ ] Complete keyboard-only testing across forms, navigation and admin; perform a real screen-reader check and test on real mobile devices.
+- [x] On 5 November, keyboard-only browser automation at 390 px and 1440 px opened the mobile menu, submitted both inquiry forms, signed in, opened and updated an inquiry, returned to the list and signed out against an isolated database. This covers those paths only; it does not replace the remaining navigation review, screen-reader checks or physical-device testing.
 - [x] Re-run accessibility and performance audits on the public deployment: mobile Lighthouse measured performance 92, accessibility 100, best practices 100 and SEO 63; mobile axe found zero violations across eight representative live routes. These lab checks do not replace screen-reader testing.
 - [ ] Resolve SEO readiness with the company. The site intentionally uses noindex pending content/launch approval; one local Lighthouse run scored SEO 63. Only enable indexing after approval, then remeasure.
 - [x] Review dependency audit: 16 moderate findings remain in development tooling (minimatch), with zero production findings. The compatible audit fix dry run changed nothing; npm suggests a breaking ESLint downgrade, so that was not forced.
