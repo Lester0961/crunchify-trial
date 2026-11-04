@@ -10,7 +10,7 @@ Updated 4 November 2026. Sources: A = trial agreement; D = B2B dossier; B = Driv
 - [x] A: Synthetic inquiries were saved to PostgreSQL with source, UTM source/campaign and selected products. A conflicting duplicate submission ID was rejected; test records were removed. Further abuse testing remains.
 - [ ] A: Both confirmation and notification were delivered to the user's own temporary address through the public deployment on 4 November 2026. The notification landed in Spam. The company-approved authenticated sender/domain and notification recipient remain missing.
 - [x] A: Next.js App Router, TypeScript, Tailwind, Supabase PostgreSQL, migrations, seed data, Vercel and private Git repository are in place. Public address: https://crunchify.vercel.app/.
-- [ ] A: Dockerfile and environment configuration exist, but Docker build and VPS portability have not been verified on a host.
+- [x] A: Docker image built and ran on a GitHub Actions Linux host with disposable PostgreSQL; synthetic inquiry, admin, and origin checks passed. Real VPS deployment, HTTPS proxy and company email remain unverified.
 - [x] E: On 4 November, a live mobile Lighthouse run measured performance 92, accessibility 100 and best practices 100; SEO was 63 because production indexing remains disabled.
 
 ## Bonus and supporting
@@ -24,7 +24,7 @@ Updated 4 November 2026. Sources: A = trial agreement; D = B2B dossier; B = Driv
 ## Remaining acceptance
 
 - [ ] Verify both actual email receipts, failure handling and safe recovery using approved sender and recipients.
-- [ ] Complete mobile/desktop browser, keyboard, accessibility, SEO, Lighthouse, security and Docker checks with recorded results.
+- [ ] Complete outstanding physical-device and screen-reader testing, SEO launch decision, and final security and company-email checks. Automated mobile/desktop, Lighthouse, security, and isolated Docker checks are recorded in the checklist.
 - [ ] Resolve full brand fonts, business contact details, the pictured banana size discrepancy, Apple size, written post-kickoff summary and final acceptance criteria with the company.
 - [ ] Provide handover and address the company's consolidated feedback. The bonus remains subject to company acceptance.
 

@@ -39,7 +39,7 @@
 
 ## Deployment and delivery
 
-- [ ] Install or access an approved Docker environment, build and run the supplied image, and test the complete flow and environment configuration. Docker readiness has not yet been demonstrated.
+- [x] Build and run the Docker image on a private GitHub Actions Linux runner with a disposable PostgreSQL container. The test verified non-root execution, homepage and image loading, synthetic inquiry persistence and UTM, admin sign-in, cross-origin rejection, update, retry and logout. Email was disabled; actual VPS, company mail and HTTPS-proxy testing remain open.
 - [ ] Confirm Vercel, GitHub, Supabase, Brevo, domain, DNS, backup and billing ownership with the company. Keep the repository private and provide access through an agreed handover.
 - [ ] Decide the production branch and release process. Automatic production Git builds are currently guarded; production deployments have been promoted explicitly after checks.
 - [ ] Review [HANDOVER.md](HANDOVER.md), verify setup instructions from a clean checkout, and deliver the repository and review link to the company when ready.
@@ -63,7 +63,7 @@
 ## Refresh deployment, 4 November 2026
 
 - [x] Deployed the supplied imagery and Poppins fallback to https://crunchify.vercel.app/. The protected preview and production deployments built successfully; production browser smoke checks passed, and the homepage image loaded at mobile width.
-- [x] The Next.js standalone server served the homepage and supplied image locally. Docker and the complete VPS bonus remain unverified.
+- [x] The Next.js standalone server served the homepage and supplied image locally. A Docker build and isolated container smoke test subsequently passed; the complete VPS bonus remains unverified.
 - [x] A clean checkout passed npm ci, lint and build. A synthetic PostgreSQL backup restored four products and one test inquiry; see [BACKUP-RESTORE.md](BACKUP-RESTORE.md). Production backup and restoration remain open.
 - [ ] A separate free preview project was attempted, but Supabase reported the account has reached its active free-project limit. No other project was paused or changed.
 
@@ -79,3 +79,5 @@
 - [x] Limited inquiry request bodies while streaming, including when Content-Length is missing or misleading. Integration checks cover chunked and multibyte input; a local chunked HTTP request returned 413, and isolated wholesale/partner flows still passed.
 
 - [x] Applied streamed size limits to staff sign-in and inquiry-update forms. An isolated test verified ordinary sign-in, admin updates, a 5,000-character Unicode note, oversized requests and unsupported content types. The protected preview rejected an oversized login, and live mobile/desktop sign-in and sign-out smoke checks passed after deployment.
+
+- [x] The isolated Docker run exposed and verified a fix for standalone admin origin validation. Staff POST routes now use the public Host and trusted proxy scheme; [VPS-MIGRATION.md](VPS-MIGRATION.md) records the required proxy configuration. CI evidence: https://github.com/Lester0961/crunchify-trial/actions/runs/41759444171.
