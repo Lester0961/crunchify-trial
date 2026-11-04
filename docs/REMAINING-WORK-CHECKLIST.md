@@ -25,7 +25,7 @@
 - [ ] Test the separate brand/media flow with the final company-approved fields and routing.
 - [ ] Review and test server-side validation, spam/rate limiting, unauthorized admin access, session expiry/sign-out, and write-action authorization. Verify no credentials or customer data are exposed.
 - [ ] Recheck admin search, type/status filters, counts, inquiry details, notes, status updates and email-retry warning on mobile and desktop. Test recovery after a provider failure using the final provider settings.
-- [ ] Separate preview and production databases, or otherwise agree an isolation and data-protection strategy with the company. They currently share one database.
+- [ ] Establish full preview/production isolation with separate databases and restricted credentials, or agree a company-approved strategy. New preview deployments now use a separate schema; they still share a database and credentials, and older previews can still use production tables.
 - [ ] Establish and test a database backup and restore process. Set appropriate account permissions, retention and operational ownership.
 - [ ] Rotate and securely hand over staff credentials, API keys and session secret. Remove old temporary admin-test files from the Windows Temp folder; prior protected deployments can retain earlier configuration.
 
@@ -81,3 +81,8 @@
 - [x] Applied streamed size limits to staff sign-in and inquiry-update forms. An isolated test verified ordinary sign-in, admin updates, a 5,000-character Unicode note, oversized requests and unsupported content types. The protected preview rejected an oversized login, and live mobile/desktop sign-in and sign-out smoke checks passed after deployment.
 
 - [x] The isolated Docker run exposed and verified a fix for standalone admin origin validation. Staff POST routes now use the public Host and trusted proxy scheme; [VPS-MIGRATION.md](VPS-MIGRATION.md) records the required proxy configuration. CI evidence: https://github.com/Lester0961/crunchify-trial/actions/runs/41759444171.
+
+- [x] New Vercel previews use `crunchify_preview` while production uses `crunchify_private`. Protected preview and public production synthetic inquiries were each found only in their intended schema and then removed by exact ID. Both messages from each test reached the temporary Gmail inbox. An earlier production notification landed in Spam, so placement can vary. This schema separation is not a database security boundary.
+- [ ] Review production row-level security. Supabase reported RLS disabled on the private production tables. Direct privilege checks found no schema usage or table SELECT/INSERT/UPDATE/DELETE grants for anon, authenticated or service_role. Do not enable policies blindly; verify the application role and owner-approved access design first. Preview tables have RLS enabled with no public policies.
+
+- [x] After schema routing changed, the Linux Docker smoke test passed again and live mobile/desktop admin sign-in and sign-out smoke checks passed.

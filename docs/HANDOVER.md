@@ -5,7 +5,7 @@
 - Public site: https://crunchify.vercel.app/
 - Private repository: https://github.com/Lester0961/crunchify-trial
 - Vercel project: `lesters-projects-17d9e437/crunchify-trial`; application root `web/`.
-- PostgreSQL: dedicated Supabase project `crunchify-trial` in the School organization. Production and preview currently share this database.
+- PostgreSQL: dedicated Supabase project `crunchify-trial` in the School organization. Production and new previews share this database and credentials but use separate schemas: `crunchify_private` for production and `crunchify_preview` for preview. This prevents ordinary test-record mixing, not database-level privilege isolation. Older preview deployments can still point at the production schema.
 - Staff sign-in: `/admin/login`. The locally generated credentials are in the ignored `web/.env.admin-credentials` file on the development machine. Transfer credentials securely to the authorized owner and rotate them for handover. Do not email or commit the file.
 
 The default Git branch is `codex/crunchify-trial`. A Vercel ignored-build command currently prevents Git pushes to the production target from publishing automatically; production releases have been made explicitly after checks. Review branch and release policy with the company before handover. The public site currently returns `noindex` until content and launch approval.
@@ -20,7 +20,7 @@ The user authorized a temporary Brevo sender and notification recipient at `john
 
 Server-only Vercel environment names are `DATABASE_URL`, `BREVO_API_KEY`, `MAIL_FROM`, `INQUIRY_NOTIFICATION_TO`, `ADMIN_USER`, `ADMIN_PASSWORD_HASH`, and `ADMIN_SESSION_SECRET`. Never expose these through `NEXT_PUBLIC_` variables, Git, logs, screenshots or public documents. Sensitive Vercel values may not be retrievable after saving. Redeploy after changing environment values.
 
-The schema and safe product seed are in `web/database/`; do not run setup scripts until the target database is positively identified. Back up and test restoration before schema or infrastructure changes. Development and preview should use separate databases before sensitive client data is handled at scale. Keep temporary test inquiries unmistakable and delete only exact test records.
+The schema and safe product seed are in `web/database/`; do not run setup scripts until the target database is positively identified. Back up and test restoration before schema or infrastructure changes. Use separate projects and credentials for a stronger security boundary before sensitive client data is handled at scale. New preview deployments use a separate schema, but historical preview builds can still point to production. Keep temporary test inquiries unmistakable and delete only exact test records.
 
 ## Verification already performed
 
@@ -36,6 +36,6 @@ The schema and safe product seed are in `web/database/`; do not run setup script
 2. Complete Talina and Antipasto web fonts, confirmed Apple size, public business contact details, and approved privacy copy. The user confirmed the supplied assets are approved; the supplied banana package image says 200 g while the dossier lists 100 g and 250 g. Poppins from the kit is a temporary SIL-OFL fallback because the supplied brand-font demos have missing glyphs or trial markings.
 3. The written post-kickoff acceptance summary, company review, and consolidated feedback.
 4. Real-device and screen-reader checks; test the real VPS deployment and restore a production backup. The Docker image passed a disposable Linux runner test with email disabled. A synthetic local backup and restore succeeded; see `BACKUP-RESTORE.md`. VPS migration is not complete; see `VPS-MIGRATION.md`.
-5. Decide ownership and access for Vercel, Brevo, Supabase, GitHub, DNS and backups; separate preview and production databases before handover.
+5. Decide ownership and access for Vercel, Brevo, Supabase, GitHub, DNS and backups; separate preview and production databases and credentials before handover; new preview builds currently use separate schemas only.
 
 The original agreement supplies the formal ten-working-day conditions and makes bonus acceptance company-dependent. The internal five-day target does not alter those terms.
