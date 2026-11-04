@@ -33,7 +33,7 @@
 
 - [x] Check 11 public and admin-entry routes at 320, 390, 768, 1024 and 1440 px for successful responses and horizontal overflow; inspect the refreshed homepage at mobile and desktop sizes. Continue real-device and full-state review below.
 - [ ] Complete keyboard-only testing across forms, navigation and admin; perform a real screen-reader check and test on real mobile devices.
-- [ ] Re-run accessibility and performance audits on the final public deployment. Local mobile automated axe checks reported zero violations across eight representative routes; this does not replace screen-reader testing.
+- [ ] Re-run accessibility and performance audits on the final public deployment. The refreshed local mobile Lighthouse run measured performance 98, accessibility 100, best practices 100 and SEO 63; local mobile axe checks reported zero violations across eight representative routes. These lab checks do not replace screen-reader testing.
 - [ ] Resolve SEO readiness with the company. The site intentionally uses noindex pending content/launch approval; one local Lighthouse run scored SEO 63. Only enable indexing after approval, then remeasure.
 - [ ] Review development dependency audit findings: the last full audit reported 16 moderate findings in tooling dependencies, while the production-only audit reported zero. Check compatible upstream fixes without forcing a breaking downgrade.
 
@@ -59,3 +59,8 @@
 - [x] Both wholesale and brand/media synthetic inquiries saved in the live database and sent both messages to the temporary Brevo address; synthetic records were removed. Inbox versus Spam placement is noted above.
 - [x] Vercel deployment, connected private GitHub repository, Supabase project, schema migration and safe product seed.
 - [x] Local build, lint, production dependency audit, integration and browser smoke checks; mobile axe checks on examined pages. One local Lighthouse run measured performance 98, accessibility 100 and best practices 100; these are lab results, not a conformance certificate.
+
+## Refresh deployment, 4 November 2026
+
+- [x] Deployed the supplied imagery and Poppins fallback to https://crunchify.vercel.app/. The protected preview and production deployments built successfully; production browser smoke checks passed, and the homepage image loaded at mobile width.
+- [ ] A standalone package copy was attempted but not verified; Docker and the complete VPS bonus remain unverified.
