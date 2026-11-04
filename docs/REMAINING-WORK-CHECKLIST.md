@@ -26,6 +26,7 @@
 - [ ] Review and test server-side validation, spam/rate limiting, unauthorized admin access, session expiry/sign-out, and write-action authorization. Verify no credentials or customer data are exposed.
 - [x] Implement server-side session revocation. A copied cookie was denied both admin reads and writes after sign-out on preview and production; rotating the session secret invalidates all current sessions. Older deployments may retain the previous stateless implementation and credentials until retired.
 - [x] Deploy and verify admin change history on preview and production: a mobile browser updated an exact synthetic inquiry and displayed its history in each environment; the test records were removed. Database triggers are active and restricted-role tests passed locally. The shared account cannot identify individual staff members; history is not tamper-proof against a compromised application account and older changes cannot be reconstructed.
+- [x] Verify long admin notes on mobile: a 5,000-character unbroken note and its change history fit a 390 px viewport in local, preview and production browser tests. Synthetic records were removed.
 - [ ] Recheck admin search, type/status filters, counts, inquiry details, notes, status updates and email-retry warning on mobile and desktop. Test recovery after a provider failure using the final provider settings.
 - [ ] Establish full preview/production isolation with separate databases and restricted credentials, or agree a company-approved strategy. New preview deployments now use a separate schema and restricted credential but share the same database. Older previews can retain the former production credential until it is rotated.
 - [ ] Establish and test a database backup and restore process. Set appropriate account permissions, retention and operational ownership.
@@ -68,6 +69,7 @@
 - [x] Deployed the supplied imagery and Poppins fallback to https://crunchify.vercel.app/. The protected preview and production deployments built successfully; production browser smoke checks passed, and the homepage image loaded at mobile width.
 - [x] The Next.js standalone server served the homepage and supplied image locally. A Docker build and isolated container smoke test subsequently passed; the complete VPS bonus remains unverified.
 - [x] A clean checkout passed npm ci, lint and build. A synthetic PostgreSQL backup restored four products and one test inquiry; see [BACKUP-RESTORE.md](BACKUP-RESTORE.md). Production backup and restoration remain open.
+- [x] On 5 November, a fresh checkout at commit `a511f00` passed npm ci, lint, build and all 12 integration tests. This precedes the small mobile history-wrapping change, which passed its own build, lint and browser checks.
 - [ ] A separate free preview project was attempted, but Supabase reported the account has reached its active free-project limit. No other project was paused or changed.
 
 ## Admin verification, 4 November 2026
