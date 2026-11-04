@@ -5,7 +5,7 @@
 - Public site: https://crunchify.vercel.app/
 - Private repository: https://github.com/Lester0961/crunchify-trial
 - Vercel project: `lesters-projects-17d9e437/crunchify-trial`; application root `web/`.
-- PostgreSQL: dedicated Supabase project `crunchify-trial` in the School organization. Production and new previews share one database but use separate schemas and credentials: production uses `crunchify_private`, while new previews use a restricted `crunchify_preview_app` role and `crunchify_preview`. The preview role lacks production schema usage and table access. Earlier preview deployments may retain the former production credential; retire their access by rotating production credentials after a verified cutover.
+- PostgreSQL: dedicated Supabase project `crunchify-trial` in the School organization. Production and new previews share one database but use separate schemas and credentials: production uses the restricted `crunchify_production_app` role and `crunchify_private`, while new previews use the restricted `crunchify_preview_app` role and `crunchify_preview`. The preview role lacks production schema usage and table access. Earlier preview deployments may retain the former production credential; retire their access by rotating production credentials after a verified cutover.
 - Staff sign-in: `/admin/login`. The locally generated credentials are in the ignored `web/.env.admin-credentials` file on the development machine. Transfer credentials securely to the authorized owner and rotate them for handover. Do not email or commit the file.
 
 The default Git branch is `codex/crunchify-trial`. A Vercel ignored-build command currently prevents Git pushes to the production target from publishing automatically; production releases have been made explicitly after checks. Review branch and release policy with the company before handover. The public site currently returns `noindex` until content and launch approval.
@@ -18,7 +18,7 @@ The user authorized a temporary Brevo sender and notification recipient at `john
 
 ## Configuration and operations
 
-Server-only Vercel environment names include `DATABASE_URL` (production), `PREVIEW_DATABASE_URL` (preview only), `BREVO_API_KEY`, `MAIL_FROM`, `INQUIRY_NOTIFICATION_TO`, `ADMIN_USER`, `ADMIN_PASSWORD_HASH`, and `ADMIN_SESSION_SECRET`. Never expose these through `NEXT_PUBLIC_` variables, Git, logs, screenshots or public documents. Sensitive Vercel values may not be retrievable after saving. Redeploy after changing environment values.
+Server-only Vercel environment names include `PRODUCTION_DATABASE_URL` (production), `PREVIEW_DATABASE_URL` (preview only), `DATABASE_URL` (legacy production rollback credential, not used by current application code), `BREVO_API_KEY`, `MAIL_FROM`, `INQUIRY_NOTIFICATION_TO`, `ADMIN_USER`, `ADMIN_PASSWORD_HASH`, and `ADMIN_SESSION_SECRET`. Never expose these through `NEXT_PUBLIC_` variables, Git, logs, screenshots or public documents. Sensitive Vercel values may not be retrievable after saving. Redeploy after changing environment values.
 
 The schema and safe product seed are in `web/database/`; do not run setup scripts until the target database is positively identified. Back up and test restoration before schema or infrastructure changes. Use separate projects for a stronger infrastructure boundary before sensitive client data is handled at scale. New previews have a schema-restricted credential, but historical preview builds can retain the previous production credential until it is rotated. Keep temporary test inquiries unmistakable and delete only exact test records.
 
@@ -39,3 +39,5 @@ The schema and safe product seed are in `web/database/`; do not run setup script
 5. Decide ownership and access for Vercel, Brevo, Supabase, GitHub, DNS and backups; separate preview and production projects before handover and rotate the former shared production credential; newer preview builds use restricted credentials, while older previews may retain the former credential.
 
 The original agreement supplies the formal ten-working-day conditions and makes bonus acceptance company-dependent. The internal five-day target does not alter those terms.
+
+The current production code connects with the restricted production role using certificate-verified TLS. The older broad `DATABASE_URL` remains in the Production environment as a rollback safeguard and can still be read by production runtime code; older deployments can also retain it. This is not complete credential isolation. Once the owner is ready, plan a verified removal and rotation of the former database credential and assess rollback implications. Supabase Free does not provide automatic backups; see `BACKUP-RESTORE.md`.

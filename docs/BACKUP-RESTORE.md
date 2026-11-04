@@ -1,6 +1,6 @@
 # Database backup and restore
 
-The application stores inquiries in the `crunchify_private` PostgreSQL schema. Backups contain private contact information and must be encrypted, access-controlled, retained under the company’s policy and removed when that policy requires. Assign an owner to monitor backup success and perform restoration rehearsals. Do not place dumps, connection strings or passwords in Git or shared logs.
+The application stores inquiries in the `crunchify_private` PostgreSQL schema. Supabase Free does not include automatic database backups; manual or separately scheduled backups are required. Backups contain private contact information and must be encrypted, access-controlled, retained under the company’s policy and removed when that policy requires. Assign an owner to monitor backup success and perform restoration rehearsals. Do not place dumps, connection strings or passwords in Git or shared logs.
 
 On 4 November 2026, the schema was backed up and restored using PostgreSQL 18 tools in an isolated local PostgreSQL instance with synthetic data. The restored database contained the expected four products and one synthetic inquiry. This was not a backup or restore of the live database and does not establish scheduled production backups.
 

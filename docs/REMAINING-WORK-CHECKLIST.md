@@ -88,3 +88,7 @@
 - [x] After schema routing changed, the Linux Docker smoke test passed again and live mobile/desktop admin sign-in and sign-out smoke checks passed.
 
 - [x] New previews use the restricted `crunchify_preview_app` database role over certificate-verified TLS. The role has no production schema usage or inquiry-table read access. Vercel now supplies the production database variable only to Production and the restricted variable only to Preview. A protected preview inquiry passed and its exact synthetic record was removed; both messages reached the temporary inbox. Historical deployments can retain old environment values, so production credential rotation and separate projects remain open.
+
+- [x] The current production deployment uses a separate restricted role over verified TLS. A live synthetic wholesale inquiry was saved only in production, both test messages reached the temporary inbox, and the exact test record was removed. Local end-to-end and live admin smoke checks passed.
+- [ ] Retire and rotate the former broad database credential when the owner is ready. It remains configured as an unused production rollback variable and may remain in older deployment snapshots; therefore a compromise of the current production environment could still expose it.
+- [ ] Establish an actual recurring and monitored backup. Supabase Free does not include automatic database backups; the local synthetic restore rehearsal is not a production backup.
