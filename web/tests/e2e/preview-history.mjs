@@ -18,6 +18,9 @@ try {
   await page.locator('[name="password"]').fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForURL("**/admin");
+  await page.locator('[name="q"]').fill("Synthetic history deployment test");
+  await page.getByRole("button", { name: "Apply filters" }).click();
+  await page.getByText("Showing 1–1 of 1 matching inquiries", { exact: true }).waitFor();
   const malformedId = "-".repeat(36);
   assert.equal((await page.request.get(`${base.origin}/admin/inquiries/${malformedId}`)).status(), 404);
   assert.equal((await page.request.post(`${base.origin}/api/admin/inquiries/${malformedId}`, { headers: { origin: base.origin }, form: { status: "new", note: "" } })).status(), 400);
