@@ -1,0 +1,3 @@
+import Link from "next/link";
+export const metadata = { title: "Wholesale" };
+export default function Wholesale() { return <main className="shell page-section narrow"><p className="eyebrow">Wholesale partnerships</p><h1>Let’s share something good.</h1><p className="page-intro">Bring Crunchify’s fruit and vegetable snacks to your customers. We welcome inquiries from distributors, resellers and retailers.</p><div className="content-block"><h2>Start a conversation</h2><p>Tell us where you operate, the products you’re interested in and your estimated monthly volume. Our team can discuss the next steps with you.</p><Link className="button button-primary" href="/inquire">Become a Wholesale Partner</Link></div></main>; }

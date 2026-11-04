@@ -1,0 +1,11 @@
+reference/
+wireframes/
+wireframes-v2/
+wireframes-v3/
+concepts/
+web/node_modules/
+web/.next/
+web/.env*
+!web/.env.example
+__pycache__/
+*.log

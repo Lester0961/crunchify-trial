@@ -1,0 +1,14 @@
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import { isAdmin } from "@/server/security/admin";
+import { database } from "@/server/db";
+export default async function InquiryDetail({ params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAdmin())) redirect("/admin/login");
+  const { id } = await params;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
+  const result = await database().query("SELECT * FROM crunchify_private.inquiries WHERE id=$1", [id]);
+  const inquiry = result.rows[0];
+  if (!inquiry) notFound();
+  const d = inquiry.details;
+  return <main className="shell page-section narrow"><Link className="text-link" href="/admin">All inquiries</Link><h1 className="detail-title">{d.company}</h1><p className="page-intro">{inquiry.kind} inquiry · {new Date(inquiry.created_at).toLocaleString("en-GB")}</p><dl className="detail-list">{Object.entries(d as Record<string, unknown>).filter(([key]) => !["website", "submissionId"].includes(key)).map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{typeof value === "object" ? JSON.stringify(value) : String(value)}</dd></div>)}</dl><p>Sender email: {inquiry.sender_email_status} · Company email: {inquiry.company_email_status}</p>{(inquiry.sender_email_status !== "accepted" || inquiry.company_email_status !== "accepted") && <form method="post" action={`/api/admin/inquiries/${id}/retry`} className="content-block"><p>Check the email provider’s delivery history before retrying. A timeout can leave delivery uncertain.</p><button className="button button-primary">Retry pending emails</button></form>}<form className="inquiry-form content-block" action={`/api/admin/inquiries/${id}`} method="post"><label>Status<select name="status" defaultValue={inquiry.status}><option value="new">New</option><option value="contacted">Contacted</option><option value="closed">Closed</option></select></label><label>Internal note<textarea name="note" defaultValue={inquiry.internal_note} maxLength={5000} rows={5} /></label><button className="button button-primary">Save changes</button></form></main>;
+}
