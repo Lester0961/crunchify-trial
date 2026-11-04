@@ -4,7 +4,7 @@ Deliver the core and pursue the bonus against Mathew's signed-trial-agreement at
 
 ## Acceptance checkpoints
 
-1. **Brand and content:** match the supplied kit and mobile-first boards, use the four real products and confirmed dossier facts, exact wholesale CTA and why-stock-us content, and approved contact details. Complete licensed Talina and Antipasto web fonts and final packaging approval remain outstanding.
+1. **Brand and content:** match the supplied kit and mobile-first boards, use the four real products and confirmed dossier facts, exact wholesale CTA and why-stock-us content, and approved contact details. Complete Talina and Antipasto web fonts remain outstanding; the user confirmed that the supplied assets are approved.
 2. **Wholesale inquiry:** validate all nine fields on the server; protect against spam; preserve entries on errors; save the inquiry, source and UTM data to PostgreSQL; send and verify both confirmation and company notification; make delivery failure visible and recoverable.
 3. **Additional pages:** complete product listing and details, wholesale page, and a separately handled brand/media partner inquiry without invented commercial terms.
 4. **Admin CRM:** protect all staff endpoints; provide a mobile-friendly inquiry list, search, status and type filters, accurate totals, complete details, notes, status changes and email retry. Test authorization and the actual database.
@@ -14,7 +14,7 @@ Deliver the core and pursue the bonus against Mathew's signed-trial-agreement at
 ## Confirmed dependencies
 
 - Mathew has not supplied public business email or telephone, an approved company notification recipient, an approved verified sender/domain, or licensed complete brand web fonts. Do not invent them or claim email delivery.
-- Current product packaging and Apple pack size need confirmation. Use verified dossier facts and supplied imagery without asserting unverified badges or specifications.
+- The user confirmed the supplied product imagery is approved. Apple pack size is unspecified, and the pictured banana package says 200 g while the dossier lists 100 g and 250 g; do not infer a resolution.
 - Company-approved VPS infrastructure and access are not available.
 - The missing written post-kickoff acceptance summary and the client's consolidated feedback remain unconfirmed.
 

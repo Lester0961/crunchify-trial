@@ -73,3 +73,5 @@
 - [x] Live unauthenticated admin writes and retries returned 403, cross-origin login returned 403, malformed inquiry input returned 400, and oversized input returned 413. Mobile keyboard tab checks reached public forms and admin filters; real screen-reader and physical-device checks remain open.
 
 - [x] On isolated local PostgreSQL with email disabled, a real browser submitted a wholesale inquiry, retained UTM attribution and product selection, displayed the email-failure warning, rejected a conflicting duplicate, and allowed an administrator to retry and update the synthetic inquiry. The exact synthetic record was removed afterward. The final company sender and routing still require their own test.
+
+- [x] Extended the isolated browser/database test to verify the separate brand/media submission, honeypot rejection, a ten-request rate limit, and denial of admin access and writes with an expired signed session. This does not replace testing with the final company email configuration.
