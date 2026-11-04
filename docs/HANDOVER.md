@@ -1,0 +1,40 @@
+# Crunchify trial handover
+
+## Current access
+
+- Public site: https://crunchify.vercel.app/
+- Private repository: https://github.com/Lester0961/crunchify-trial
+- Vercel project: `lesters-projects-17d9e437/crunchify-trial`; application root `web/`.
+- PostgreSQL: dedicated Supabase project `crunchify-trial` in the School organization. Production and preview currently share this database.
+- Staff sign-in: `/admin/login`. The locally generated credentials are in the ignored `web/.env.admin-credentials` file on the development machine. Transfer credentials securely to the authorized owner and rotate them for handover. Do not email or commit the file.
+
+The default Git branch is `codex/crunchify-trial`. A Vercel ignored-build command currently prevents Git pushes to the production target from publishing automatically; production releases have been made explicitly after checks. Review branch and release policy with the company before handover. The public site currently returns `noindex` until content and launch approval.
+
+## Inquiry handling
+
+The wholesale form validates the nine agreed fields, stores the inquiry and attribution in PostgreSQL, and attempts the confirmation and company notification. Staff can search and filter the inquiry list, open a record, update its status and note, inspect email status, and retry a failed notification. A provider status of `accepted` means the provider accepted the request; it is not a delivery receipt. If delivery is uncertain, inspect Brevo's transactional logs before retrying to avoid duplicates.
+
+The user authorized a temporary Brevo sender and notification recipient at `johnlesterdmtr.dev@gmail.com`. On 4 November 2026, both messages arrived in a production test; the company notification went to Spam. Brevo rewrote the Gmail sender to a Brevo sending address. Staff should monitor the admin list and their spam folder. Replace the temporary sender with the company's authenticated domain and the temporary recipient with the company's approved address before final handover.
+
+## Configuration and operations
+
+Server-only Vercel environment names are `DATABASE_URL`, `BREVO_API_KEY`, `MAIL_FROM`, `INQUIRY_NOTIFICATION_TO`, `ADMIN_USER`, `ADMIN_PASSWORD_HASH`, and `ADMIN_SESSION_SECRET`. Never expose these through `NEXT_PUBLIC_` variables, Git, logs, screenshots or public documents. Sensitive Vercel values may not be retrievable after saving. Redeploy after changing environment values.
+
+The schema and safe product seed are in `web/database/`; do not run setup scripts until the target database is positively identified. Back up and test restoration before schema or infrastructure changes. Development and preview should use separate databases before sensitive client data is handled at scale. Keep temporary test inquiries unmistakable and delete only exact test records.
+
+## Verification already performed
+
+- Local production build, lint, production dependency audit, browser smoke tests and Brevo request/failure integration tests passed.
+- A local Chrome mobile Lighthouse run measured performance 98, accessibility 100, best practices 100, SEO 63; noindex caused the indexing finding. These are lab scores, not a guarantee or accessibility certification.
+- Mobile automated axe checks found no violations on the checked public pages. Keyboard navigation was exercised for the mobile menu; real-device and screen-reader tests remain open.
+- A production synthetic inquiry was saved, and both Brevo messages arrived at the temporary address; the notification was classified as Spam. Preview testing also checked email retry, admin login/status updates, search, product selection, source/UTM storage and duplicate handling. Synthetic database records were removed.
+
+## Open items before company acceptance
+
+1. Company-approved authenticated email domain, sender and notification recipient; confirm receipt and spam placement after switching.
+2. Full licensed Talina and Antipasto web fonts, current product imagery and packaging, confirmed Apple size, public business contact details, and approved privacy copy.
+3. The written post-kickoff acceptance summary, company review, and consolidated feedback.
+4. Real-device and screen-reader checks; test a Docker image and restore a backup. VPS migration is not complete; see `VPS-MIGRATION.md`.
+5. Decide ownership and access for Vercel, Brevo, Supabase, GitHub, DNS and backups; separate preview and production databases before handover.
+
+The original agreement supplies the formal ten-working-day conditions and makes bonus acceptance company-dependent. The internal five-day target does not alter those terms.
