@@ -24,6 +24,7 @@
 - [ ] Test the full wholesale flow in an actual browser after the final mail configuration: all nine fields, product selection, source/UTM values, saved record, both email receipts, success and failure behavior, and duplicate/retry handling.
 - [ ] Test the separate brand/media flow with the final company-approved fields and routing.
 - [ ] Review and test server-side validation, spam/rate limiting, unauthorized admin access, session expiry/sign-out, and write-action authorization. Verify no credentials or customer data are exposed.
+- [ ] Implement and verify individual server-side session revocation if the company requires immediate invalidation of a copied cookie on sign-out. Current signed sessions expire after eight hours; rotating the session secret invalidates all sessions. Record an auditable history of admin status and note changes, as called for in the project plan.
 - [ ] Recheck admin search, type/status filters, counts, inquiry details, notes, status updates and email-retry warning on mobile and desktop. Test recovery after a provider failure using the final provider settings.
 - [ ] Establish full preview/production isolation with separate databases and restricted credentials, or agree a company-approved strategy. New preview deployments now use a separate schema and restricted credential but share the same database. Older previews can retain the former production credential until it is rotated.
 - [ ] Establish and test a database backup and restore process. Set appropriate account permissions, retention and operational ownership.
