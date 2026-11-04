@@ -33,7 +33,7 @@ The schema and safe product seed are in `web/database/`; do not run setup script
 ## Open items before company acceptance
 
 1. Company-approved authenticated email domain, sender and notification recipient; confirm receipt and spam placement after switching.
-2. Full licensed Talina and Antipasto web fonts, current product imagery and packaging, confirmed Apple size, public business contact details, and approved privacy copy.
+2. Complete Talina and Antipasto web fonts, confirmed Apple size, public business contact details, and approved privacy copy. The user confirmed the supplied assets are approved; the supplied banana package image says 200 g while the dossier lists 100 g and 250 g. Poppins from the kit is a temporary SIL-OFL fallback because the supplied brand-font demos have missing glyphs or trial markings.
 3. The written post-kickoff acceptance summary, company review, and consolidated feedback.
 4. Real-device and screen-reader checks; test a Docker image and restore a backup. VPS migration is not complete; see `VPS-MIGRATION.md`.
 5. Decide ownership and access for Vercel, Brevo, Supabase, GitHub, DNS and backups; separate preview and production databases before handover.

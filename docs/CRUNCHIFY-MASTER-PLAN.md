@@ -1,3 +1,5 @@
+> Historical planning baseline: see HANDOVER.md and REMAINING-WORK-CHECKLIST.md for current implementation and outstanding work.
+
 # Crunchify B2B website: complete trial plan
 
 **Planning baseline:** 3 November 2026. This is a build plan, not a completed website. The PNG boards are static concepts and have not been approved by Mathew. The internal goal is five days; the agreement gives ten working days from the conditions stated in the agreement. Five days does not change that term.
