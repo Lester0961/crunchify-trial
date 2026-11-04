@@ -16,7 +16,7 @@ Updated 4 November 2026. Sources: A = trial agreement; D = B2B dossier; B = Driv
 ## Bonus and supporting
 
 - [x] A: Four product detail pages and wholesale page implemented; dossier-backed ingredients and confirmed sizes displayed, Apple size omitted.
-- [ ] A: Brand/media form exists and stores submissions, but routing and actual email delivery need configuration and verification.
+- [x] A: A production brand/media test stored the proposed collaboration field and UTM source, and both emails reached the temporary address. The notification was classified as Spam; the company's final routing and sender require confirmation.
 - [ ] A: Admin sign-in, list, filters, details, status, notes and email retry are implemented; deployed sign-in, saving a test status and filtered search were verified. Security and recovery review remains.
 - [ ] A: The user requested VPS migration preparation for later. The runbook is `VPS-MIGRATION.md`; an actual migration requires an approved host, access and a verified cutover and rollback.
 - [ ] P: Privacy page uses provisional text and requires company approval.

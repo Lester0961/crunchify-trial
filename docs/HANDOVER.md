@@ -28,6 +28,7 @@ The schema and safe product seed are in `web/database/`; do not run setup script
 - A local Chrome mobile Lighthouse run measured performance 98, accessibility 100, best practices 100, SEO 63; noindex caused the indexing finding. These are lab scores, not a guarantee or accessibility certification.
 - Mobile automated axe checks found no violations on the checked public pages. Keyboard navigation was exercised for the mobile menu; real-device and screen-reader tests remain open.
 - A production synthetic inquiry was saved, and both Brevo messages arrived at the temporary address; the notification was classified as Spam. Preview testing also checked email retry, admin login/status updates, search, product selection, source/UTM storage and duplicate handling. Synthetic database records were removed.
+- A separate production brand/media test stored its collaboration type and UTM source and delivered both messages to the temporary address. The notification was classified as Spam; the synthetic database record was removed.
 
 ## Open items before company acceptance
 
