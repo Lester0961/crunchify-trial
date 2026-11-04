@@ -18,6 +18,10 @@ try {
   await page.locator('[name="password"]').fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForURL("**/admin");
+  const malformedId = "-".repeat(36);
+  assert.equal((await page.request.get(`${base.origin}/admin/inquiries/${malformedId}`)).status(), 404);
+  assert.equal((await page.request.post(`${base.origin}/api/admin/inquiries/${malformedId}`, { headers: { origin: base.origin }, form: { status: "new", note: "" } })).status(), 400);
+  assert.equal((await page.request.post(`${base.origin}/api/admin/inquiries/${malformedId}/retry`, { headers: { origin: base.origin } })).status(), 400);
   await page.goto(`${base.origin}/admin/inquiries/ed8a4b34-6d89-44f1-b29b-6d7905fd823c`);
   await page.getByRole("heading", { name: "Synthetic history deployment test" }).waitFor();
   await page.locator('[name="status"]').selectOption("contacted");
