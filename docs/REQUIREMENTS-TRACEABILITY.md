@@ -8,7 +8,7 @@ Updated 4 November 2026. Sources: A = trial agreement; D = B2B dossier; B = Driv
 - [ ] B/U: Supplied palette, logo, product imagery and mobile-first layouts are in use; complete licensed Talina and Antipasto web fonts and final product asset approval remain outstanding.
 - [x] A/D: Wholesale form includes all nine agreed fields; server validation and spam checks are implemented.
 - [x] A: A synthetic inquiry was saved to the dedicated PostgreSQL database with source and product information. Conflicting duplicate submission ID was rejected in staging; the test record was removed. Further failure, attribution and abuse testing is needed.
-- [ ] A: Confirmation and company notification emails are implemented but not configured or delivered. Verified provider, sender, and company recipient are missing. Until configured, the user sees that email notification is pending and staff can inspect the saved inquiry.
+- [ ] A: Both confirmation and notification were delivered to the user's own temporary address through the public deployment on 4 November 2026. The notification landed in Spam. The company-approved authenticated sender/domain and notification recipient remain missing.
 - [x] A: Next.js App Router, TypeScript, Tailwind, Supabase PostgreSQL, migrations, seed data, Vercel and private Git repository are in place. Public address: https://crunchify.vercel.app/.
 - [ ] A: Dockerfile and environment configuration exist, but Docker build and VPS portability have not been verified on a host.
 - [ ] E: Basic metadata exists; Lighthouse scores above 90 have not been measured. Production indexing remains disabled pending content approval.
