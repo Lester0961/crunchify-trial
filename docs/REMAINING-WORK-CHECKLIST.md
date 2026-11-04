@@ -66,3 +66,8 @@
 - [x] The Next.js standalone server served the homepage and supplied image locally. Docker and the complete VPS bonus remain unverified.
 - [x] A clean checkout passed npm ci, lint and build. A synthetic PostgreSQL backup restored four products and one test inquiry; see [BACKUP-RESTORE.md](BACKUP-RESTORE.md). Production backup and restoration remain open.
 - [ ] A separate free preview project was attempted, but Supabase reported the account has reached its active free-project limit. No other project was paused or changed.
+
+## Admin verification, 4 November 2026
+
+- [x] Fixed a mobile-only issue that hid the admin sign-out button. Live authenticated browser smoke checks passed at 390 px and 1440 px, including sign-in, visible sign-out and redirection after logout.
+- [x] Live unauthenticated admin writes and retries returned 403, cross-origin login returned 403, malformed inquiry input returned 400, and oversized input returned 413. Mobile keyboard tab checks reached public forms and admin filters; real screen-reader and physical-device checks remain open.
