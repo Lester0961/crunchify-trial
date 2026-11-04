@@ -49,6 +49,24 @@ try {
   assert.equal(await noJsPage.locator("form.inquiry-form").getAttribute("action"), "/api/inquiries");
   assert.match(await noJsPage.locator("noscript").innerText(), /enable JavaScript/i);
   await noJs.close();
+  if (process.env.ADMIN_TEST_USER && process.env.ADMIN_TEST_PASSWORD) {
+    for (const width of [390, 1440]) {
+      const admin = await browser.newPage({ viewport: { width, height: 900 } });
+      await admin.goto(`${base}/admin/login`);
+      await admin.locator('[name="username"]').fill(process.env.ADMIN_TEST_USER);
+      await admin.locator('[name="password"]').fill(process.env.ADMIN_TEST_PASSWORD);
+      await admin.getByRole("button", { name: "Sign in" }).click();
+      await admin.waitForURL("**/admin");
+      const signOut = admin.getByRole("button", { name: "Sign out" });
+      assert.equal(await signOut.isVisible(), true, `sign out hidden at ${width}px`);
+      assert.equal(await admin.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `admin overflow at ${width}px`);
+      await signOut.click();
+      await admin.waitForURL("**/admin/login");
+      const loggedOut = await admin.request.get(`${base}/admin`, { maxRedirects: 0 });
+      assert.equal(loggedOut.status(), 307);
+      await admin.close();
+    }
+  }
   console.log("Responsive and critical route smoke checks passed.");
 } finally {
   await browser.close();

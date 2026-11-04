@@ -33,9 +33,9 @@
 
 - [x] Check 11 public and admin-entry routes at 320, 390, 768, 1024 and 1440 px for successful responses and horizontal overflow; inspect the refreshed homepage at mobile and desktop sizes. Continue real-device and full-state review below.
 - [ ] Complete keyboard-only testing across forms, navigation and admin; perform a real screen-reader check and test on real mobile devices.
-- [ ] Re-run accessibility and performance audits on the final public deployment. The refreshed local mobile Lighthouse run measured performance 98, accessibility 100, best practices 100 and SEO 63; local mobile axe checks reported zero violations across eight representative routes. These lab checks do not replace screen-reader testing.
+- [x] Re-run accessibility and performance audits on the public deployment: mobile Lighthouse measured performance 92, accessibility 100, best practices 100 and SEO 63; mobile axe found zero violations across eight representative live routes. These lab checks do not replace screen-reader testing.
 - [ ] Resolve SEO readiness with the company. The site intentionally uses noindex pending content/launch approval; one local Lighthouse run scored SEO 63. Only enable indexing after approval, then remeasure.
-- [ ] Review development dependency audit findings: the last full audit reported 16 moderate findings in tooling dependencies, while the production-only audit reported zero. Check compatible upstream fixes without forcing a breaking downgrade.
+- [x] Review dependency audit: 16 moderate findings remain in development tooling (minimatch), with zero production findings. The compatible audit fix dry run changed nothing; npm suggests a breaking ESLint downgrade, so that was not forced.
 
 ## Deployment and delivery
 
@@ -63,4 +63,6 @@
 ## Refresh deployment, 4 November 2026
 
 - [x] Deployed the supplied imagery and Poppins fallback to https://crunchify.vercel.app/. The protected preview and production deployments built successfully; production browser smoke checks passed, and the homepage image loaded at mobile width.
-- [ ] A standalone package copy was attempted but not verified; Docker and the complete VPS bonus remain unverified.
+- [x] The Next.js standalone server served the homepage and supplied image locally. Docker and the complete VPS bonus remain unverified.
+- [x] A clean checkout passed npm ci, lint and build. A synthetic PostgreSQL backup restored four products and one test inquiry; see [BACKUP-RESTORE.md](BACKUP-RESTORE.md). Production backup and restoration remain open.
+- [ ] A separate free preview project was attempted, but Supabase reported the account has reached its active free-project limit. No other project was paused or changed.

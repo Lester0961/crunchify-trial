@@ -1,6 +1,6 @@
 # Crunchify wholesale website
 
-Next.js App Router, TypeScript and Tailwind application. The implementation is a protected trial build; it is not ready for public release until the service connections, content approvals and end-to-end checks below are complete. The authoritative scope is in `../docs/CRUNCHIFY-MASTER-PLAN.md`.
+Next.js App Router, TypeScript and Tailwind application. The trial is publicly available at https://crunchify.vercel.app/ with staff sign-in at `/admin/login`. Current verification and outstanding company inputs are recorded in `../docs/REMAINING-WORK-CHECKLIST.md`; the historical plan is in `../docs/CRUNCHIFY-MASTER-PLAN.md`.
 
 ## Local development
 
@@ -13,7 +13,7 @@ Next.js App Router, TypeScript and Tailwind application. The implementation is a
 
 Inquiries save before email is attempted. An email marked `accepted` was accepted by the provider, not necessarily delivered. Staff can inspect the status and manually retry pending messages; check provider history before retrying because a timeout may have an uncertain outcome and provider idempotency is time-limited. End-to-end mail delivery must be verified once the sender and recipient are supplied.
 
-The supplied font files are trial versions, so the site uses a temporary system font. Product photographs are from the supplied Drive kit; final product assets, contact details, claims and privacy wording need company approval. Source assets are excluded from Git and must be transferred through an approved private handover. The supplied Dockerfile and local-only PostgreSQL compose service have not been tested because Docker is unavailable on this machine. An actual VPS migration requires an approved host and verification.
+The supplied Talina and Antipasto files are demo/trial versions with missing glyphs or trial markings, so the site temporarily uses the supplied SIL-OFL Poppins font. The user confirmed that Mathew’s supplied product photography is approved; the banana package image says 200 g while the dossier lists 100 g and 250 g. Business contact details and privacy wording remain outstanding. Source assets are excluded from Git and must be transferred through an approved private handover. The Next.js standalone server has been verified locally; the supplied Dockerfile and PostgreSQL compose service have not been built or run because a container engine is unavailable on this machine. An actual VPS migration requires an approved host and verification.
 
 ## Project directories
 

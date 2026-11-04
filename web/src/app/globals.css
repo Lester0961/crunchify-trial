@@ -67,7 +67,7 @@ h2{font-size:clamp(36px,3.7vw,50px);line-height:1.18}
   .shell{width:min(100% - 40px,560px)}
   .site-header{height:84px;justify-content:space-between}
   .brand,.brand-crop{width:142px}.brand-crop{height:34px}.brand-crop img{width:262px;left:-59.7px;top:-114px}
-  .desktop-nav,.header-action{display:none}
+  .desktop-nav,.site-header .header-action{display:none}
   .mobile-menu{display:block;position:relative}
   .mobile-menu summary{list-style:none;cursor:pointer;color:var(--brown);border:1px solid var(--brown);border-radius:8px;min-width:76px;min-height:48px;display:flex;align-items:center;justify-content:center;font-size:16px}
   .mobile-menu summary::-webkit-details-marker{display:none}
