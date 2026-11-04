@@ -2,14 +2,13 @@ import { createHash } from "node:crypto";
 import { inquirySchema } from "@/features/inquiries/schema";
 import { database } from "@/server/db";
 import { sendEmails } from "@/server/email/send";
+import { readLimitedBody } from "@/server/security/read-limited-body";
 
 export async function POST(request: Request) {
-  const size = Number(request.headers.get("content-length") || 0);
-  if (size > 20000) return Response.json({ error: "Request is too large." }, { status: 413 });
   let input: unknown;
   try {
-    const body = await request.text();
-    if (body.length > 20000) return Response.json({ error: "Request is too large." }, { status: 413 });
+    const body = await readLimitedBody(request, 20000);
+    if (body === null) return Response.json({ error: "Request is too large." }, { status: 413 });
     input = JSON.parse(body);
   } catch { return Response.json({ error: "Invalid request." }, { status: 400 }); }
   const parsed = inquirySchema.safeParse(input);
