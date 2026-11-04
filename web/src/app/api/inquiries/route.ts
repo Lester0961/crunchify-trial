@@ -28,6 +28,9 @@ export async function POST(request: Request) {
       const delivery = await sendEmails(data);
       await db.query("UPDATE crunchify_private.inquiries SET sender_email_status=$2, company_email_status=$3 WHERE id=$1", [data.submissionId, delivery.sender ? "accepted" : "failed", delivery.company ? "accepted" : "failed"]);
     }
-    return Response.json({ ok: true });
+    const existing = await db.query("SELECT details = $2::jsonb AS same_content, sender_email_status, company_email_status FROM crunchify_private.inquiries WHERE id=$1", [data.submissionId, JSON.stringify(data)]);
+    if (!existing.rows[0]?.same_content) return Response.json({ error: "Your previous attempt was saved with different details. Please submit the updated inquiry again." }, { status: 409 });
+    const result = existing.rows[0];
+    return Response.json({ ok: true, notificationPending: result.sender_email_status !== "accepted" || result.company_email_status !== "accepted" });
   } catch { return Response.json({ error: "We couldn’t send your inquiry. Please try again later." }, { status: 503 }); }
 }

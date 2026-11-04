@@ -5,6 +5,7 @@ import { products } from "@/features/products/data";
 export function InquiryForm({ type, initialProduct = "" }: { type: "wholesale" | "partner"; initialProduct?: string }) {
   const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [error, setError] = useState("");
+  const [notificationPending, setNotificationPending] = useState(false);
   const id = useRef("");
   useEffect(() => { id.current = crypto.randomUUID(); }, []);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -18,11 +19,15 @@ export function InquiryForm({ type, initialProduct = "" }: { type: "wholesale" |
     try {
       const response = await fetch("/api/inquiries", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Please try again.");
+      if (!response.ok) {
+        if (response.status === 409) id.current = crypto.randomUUID();
+        throw new Error(result.error || "Please try again.");
+      }
+      setNotificationPending(Boolean(result.notificationPending));
       setState("success");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please try again."); setState("error"); }
   }
-  if (state === "success") return <div className="success" role="status"><h2>Thank you for getting in touch.</h2><p>Your inquiry has been received.</p></div>;
+  if (state === "success") return <div className="success" role="status"><h2>Thank you for getting in touch.</h2><p>Your inquiry has been saved.</p>{notificationPending && <p>We couldn’t send an email confirmation right now. For urgent follow-up, please contact us through our <a className="text-link" href="https://instagram.com/crunchify.eats">Instagram page</a>.</p>}</div>;
   return <form className="inquiry-form" onSubmit={submit}>
     <div className="form-grid">
       <label>Company name<input name="company" required maxLength={150} autoComplete="organization" /></label>
