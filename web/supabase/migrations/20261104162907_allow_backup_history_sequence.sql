@@ -1,0 +1,1 @@
+GRANT SELECT ON SEQUENCE crunchify_private.inquiry_history_id_seq TO crunchify_backup_app;
