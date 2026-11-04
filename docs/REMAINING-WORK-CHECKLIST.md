@@ -71,3 +71,5 @@
 
 - [x] Fixed a mobile-only issue that hid the admin sign-out button. Live authenticated browser smoke checks passed at 390 px and 1440 px, including sign-in, visible sign-out and redirection after logout.
 - [x] Live unauthenticated admin writes and retries returned 403, cross-origin login returned 403, malformed inquiry input returned 400, and oversized input returned 413. Mobile keyboard tab checks reached public forms and admin filters; real screen-reader and physical-device checks remain open.
+
+- [x] On isolated local PostgreSQL with email disabled, a real browser submitted a wholesale inquiry, retained UTM attribution and product selection, displayed the email-failure warning, rejected a conflicting duplicate, and allowed an administrator to retry and update the synthetic inquiry. The exact synthetic record was removed afterward. The final company sender and routing still require their own test.
