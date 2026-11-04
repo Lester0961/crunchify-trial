@@ -5,6 +5,7 @@ import { products } from "@/features/products/data";
 export function InquiryForm({ type, initialProduct = "" }: { type: "wholesale" | "partner"; initialProduct?: string }) {
   const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [error, setError] = useState("");
+  const [productError, setProductError] = useState("");
   const [notificationPending, setNotificationPending] = useState(false);
   const id = useRef("");
   useEffect(() => { id.current = crypto.randomUUID(); }, []);
@@ -12,6 +13,7 @@ export function InquiryForm({ type, initialProduct = "" }: { type: "wholesale" |
     event.preventDefault();
     if (state === "sending") return;
     setState("sending");
+    setProductError("");
     const form = new FormData(event.currentTarget);
     let attribution = { source: window.location.pathname, utm: {} };
     try { attribution = JSON.parse(sessionStorage.getItem("crunchify_attribution") || "null") || attribution; } catch { /* Optional attribution. */ }
@@ -21,13 +23,14 @@ export function InquiryForm({ type, initialProduct = "" }: { type: "wholesale" |
       const result = await response.json();
       if (!response.ok) {
         if (response.status === 409) id.current = crypto.randomUUID();
+        if (result.fields?.products?.[0]) setProductError(result.fields.products[0]);
         throw new Error(result.error || "Please try again.");
       }
       setNotificationPending(Boolean(result.notificationPending));
       setState("success");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please try again."); setState("error"); }
   }
-  if (state === "success") return <div className="success" role="status"><h2>Thank you for getting in touch.</h2><p>Your inquiry has been saved.</p>{notificationPending && <p>We couldn’t send an email confirmation right now. For urgent follow-up, please contact us through our <a className="text-link" href="https://instagram.com/crunchify.eats">Instagram page</a>.</p>}</div>;
+  if (state === "success") return <div className="success" role="status"><h2>Thank you for getting in touch.</h2><p>Your inquiry has been saved.</p>{notificationPending && <p>We couldn’t send all email notifications right now. For urgent follow-up, please contact us through our <a className="text-link" href="https://instagram.com/crunchify.eats">Instagram page</a>.</p>}</div>;
   return <form className="inquiry-form" onSubmit={submit}>
     <div className="form-grid">
       <label>Company name<input name="company" required maxLength={150} autoComplete="organization" /></label>
@@ -40,7 +43,7 @@ export function InquiryForm({ type, initialProduct = "" }: { type: "wholesale" |
         <label>Estimated monthly volume<input name="volume" required maxLength={100} placeholder="For example, 100 packs" /></label>
       </> : <label>Collaboration type<input name="businessType" maxLength={80} placeholder="For example, media or brand partnership" /></label>}
     </div>
-    {type === "wholesale" && <fieldset><legend>Products of interest</legend><div className="checkboxes">{products.map(p => <label key={p.slug}><input type="checkbox" name="products" value={p.slug} defaultChecked={p.slug === initialProduct} />{p.name}</label>)}</div></fieldset>}
+    {type === "wholesale" && <fieldset aria-describedby={productError ? "products-error" : undefined}><legend>Products of interest</legend><div className="checkboxes">{products.map(p => <label key={p.slug}><input type="checkbox" name="products" value={p.slug} defaultChecked={p.slug === initialProduct} />{p.name}</label>)}</div>{productError && <p id="products-error" className="form-error">{productError}</p>}</fieldset>}
     <label>Message<textarea name="message" required maxLength={5000} rows={6} /></label>
     <div className="honey" aria-hidden="true"><label>Leave this field empty<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
     {state === "error" && <p role="alert" className="form-error">{error}</p>}
