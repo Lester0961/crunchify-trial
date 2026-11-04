@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createHash, createHmac, randomUUID } from "node:crypto";
 import { chromium } from "playwright-core";
 import pg from "pg";
+import { updateDeliveryStatus } from "../../src/server/email/delivery-status.ts";
 
 // This test writes records and intentionally disables email. Refuse non-local targets.
 const base = new URL(process.env.TEST_BASE_URL || "http://localhost:3127");
@@ -118,6 +119,22 @@ try {
   assert.equal((await copiedPage.request.get(`${base.origin}/admin`, { maxRedirects: 0 })).status(), 307);
   assert.equal((await copiedPage.request.post(`${base.origin}/api/admin/inquiries/${id}`, { headers: { origin: base.origin }, form: { status: "closed", note: "Revoked" } })).status(), 403);
   await copiedContext.close();
+  await updateDeliveryStatus(db, schema, id, { sender: true, company: false });
+  await updateDeliveryStatus(db, schema, id, { sender: false, company: true });
+  await updateDeliveryStatus(db, schema, id, { sender: false, company: false });
+  const delivery = await db.query(`SELECT sender_email_status, company_email_status FROM ${schema}.inquiries WHERE id=$1`, [id]);
+  assert.deepEqual(delivery.rows[0], { sender_email_status: "accepted", company_email_status: "accepted" }, "Later failures must not overwrite accepted delivery");
+  await db.query(`UPDATE ${schema}.inquiries SET sender_email_status='failed', company_email_status='failed' WHERE id=$1`, [id]);
+  const secondClient = new pg.Client({ connectionString: databaseUrl.toString() });
+  await secondClient.connect();
+  try {
+    await Promise.all([
+      updateDeliveryStatus(db, schema, id, { sender: true, company: false }),
+      updateDeliveryStatus(secondClient, schema, id, { sender: false, company: true }),
+    ]);
+  } finally { await secondClient.end(); }
+  const concurrentDelivery = await db.query(`SELECT sender_email_status, company_email_status FROM ${schema}.inquiries WHERE id=$1`, [id]);
+  assert.deepEqual(concurrentDelivery.rows[0], { sender_email_status: "accepted", company_email_status: "accepted" }, "Concurrent attempts must preserve both accepted results");
   console.log("Isolated wholesale and partner persistence, spam/rate limits, expired session, email failure and admin retry/update passed.");
 } finally {
   if (id) await db.query(`DELETE FROM ${schema}.inquiries WHERE id=$1 AND details->>'company'=$2`, [id, company]);

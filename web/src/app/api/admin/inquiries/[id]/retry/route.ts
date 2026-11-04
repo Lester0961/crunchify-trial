@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { inquirySchema } from "@/features/inquiries/schema";
 import { database, databaseSchema } from "@/server/db";
 import { sendEmails } from "@/server/email/send";
+import { updateDeliveryStatus } from "@/server/email/delivery-status";
 import { isAdmin } from "@/server/security/admin";
 import { sameOriginUrl } from "@/server/security/request-origin";
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -17,6 +18,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const data = inquirySchema.parse(row.details);
   const only = { sender: row.sender_email_status !== "accepted", company: row.company_email_status !== "accepted" };
   const delivery = await sendEmails(data, only);
-  await db.query(`UPDATE ${schema}.inquiries SET sender_email_status=$2, company_email_status=$3 WHERE id=$1`, [id, row.sender_email_status === "accepted" || delivery.sender ? "accepted" : "failed", row.company_email_status === "accepted" || delivery.company ? "accepted" : "failed"]);
+  await updateDeliveryStatus(db, schema, id, delivery);
   return NextResponse.redirect(new URL(`/admin/inquiries/${id}`, url), 303);
 }

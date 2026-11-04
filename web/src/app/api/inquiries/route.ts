@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { inquirySchema } from "@/features/inquiries/schema";
 import { database, databaseSchema } from "@/server/db";
 import { sendEmails } from "@/server/email/send";
+import { updateDeliveryStatus } from "@/server/email/delivery-status";
 import { readLimitedBody } from "@/server/security/read-limited-body";
 
 export async function POST(request: Request) {
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
     const saved = await db.query(`INSERT INTO ${schema}.inquiries (id,kind,details) VALUES ($1,$2,$3) ON CONFLICT (id) DO NOTHING RETURNING id`, [data.submissionId, data.type, JSON.stringify(data)]);
     if (saved.rowCount) {
       const delivery = await sendEmails(data);
-      await db.query(`UPDATE ${schema}.inquiries SET sender_email_status=$2, company_email_status=$3 WHERE id=$1`, [data.submissionId, delivery.sender ? "accepted" : "failed", delivery.company ? "accepted" : "failed"]);
+      await updateDeliveryStatus(db, schema, data.submissionId, delivery);
     }
     const existing = await db.query(`SELECT details = $2::jsonb AS same_content, sender_email_status, company_email_status FROM ${schema}.inquiries WHERE id=$1`, [data.submissionId, JSON.stringify(data)]);
     if (!existing.rows[0]?.same_content) return Response.json({ error: "Your previous attempt was saved with different details. Please submit the updated inquiry again." }, { status: 409 });
