@@ -8,6 +8,8 @@ On 5 November 2026 Manila time, a live schema backup was encrypted on this Windo
 
 To create another local encrypted copy on this configured Windows account, run `node scripts/backup-production.mjs` from `web/` with PostgreSQL 18 client tools installed. The script uses the restricted credential, verifies the server certificate, encrypts the archive in memory, and verifies its listing. It fails if the archive exceeds 64 MiB. Do not commit the encrypted credential or archives; losing the Windows profile can make both unusable.
 
+After the history and session tables were added, a 5 November synthetic encrypted backup was restored to a disposable local database. The restore contained the four products, one synthetic inquiry, its history and a synthetic session; an inquiry update also produced a new history entry. A fresh live archive listed data for all five expected application tables, including history and sessions. The live archive itself has not been restored, and listing table entries does not verify row completeness.
+
 ## Backup
 
 1. Positively identify the source database and use a PostgreSQL client version compatible with its server. Supply connection details through a protected credential mechanism such as `PGPASSFILE` and individual `PGHOST`, `PGPORT`, `PGUSER`, and `PGDATABASE` environment variables. Avoid placing the password or connection URL in shell history or command arguments. Use a direct or session-pooler connection suitable for backup; confirm availability and TLS requirements with the provider.
@@ -22,3 +24,5 @@ To create another local encrypted copy on this configured Windows account, run `
 4. Record the test date, backup timestamp, target, results and responsible owner. Securely remove the disposable database and temporary copy according to the company’s policy.
 
 For a real recovery, stop or coordinate writes first. Assess changes made after the backup and reconcile them rather than replacing newer inquiry records with an older snapshot. Document the approved recovery point and communicate the outcome to the operational owner.
+
+The archive deliberately omits ownership and privileges, so recreate and verify restricted roles, grants, and any row-security policies on the chosen destination before exposing the application. Restoring an old `admin_sessions` table can revive unexpired sessions from the backup: as part of an approved recovery, invalidate restored sessions and rotate the admin session secret before reopening staff access. Rehearse these actions on a separate database first.

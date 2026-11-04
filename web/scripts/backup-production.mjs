@@ -36,7 +36,9 @@ const restored = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "
 if (restored.status !== 0 || restored.error) throw new Error("Could not decrypt the backup for verification");
 const listing = spawnSync(pgRestore, ["--list"], { input: restored.stdout, maxBuffer: 4 * 1024 * 1024, timeout: 120000 });
 restored.stdout.fill(0);
-if (listing.status !== 0 || !listing.stdout.toString("utf8").includes("TABLE DATA crunchify_private inquiries")) throw new Error("Backup archive verification failed");
+const requiredTables = ["products", "inquiries", "rate_limits", "inquiry_history", "admin_sessions"];
+const listingText = listing.stdout.toString("utf8");
+if (listing.status !== 0 || requiredTables.some((table) => !listingText.includes(`TABLE DATA crunchify_private ${table} `))) throw new Error("Backup archive verification failed: an expected table is missing");
 const finalPath = encrypted.slice(0, -4);
 renameSync(encrypted, finalPath);
 console.log(`Encrypted database backup created and archive listing verified: ${finalPath}`);
