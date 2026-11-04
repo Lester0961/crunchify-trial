@@ -67,6 +67,10 @@ try {
   const expiredWrite = await expiredPage.request.post(`${base.origin}/api/admin/inquiries/${id}`, { headers: { origin: base.origin }, form: { status: "closed", note: "Invalid" } });
   assert.equal(expiredWrite.status(), 403);
   await expiredContext.close();
+  const hugeLogin = await page.request.post(`${base.origin}/api/admin/login`, { headers: { origin: base.origin, "content-type": "application/x-www-form-urlencoded" }, data: "x".repeat(8193) });
+  assert.equal(hugeLogin.status(), 413);
+  const unsupportedLogin = await page.request.post(`${base.origin}/api/admin/login`, { headers: { origin: base.origin, "content-type": "application/json" }, data: "{}" });
+  assert.equal(unsupportedLogin.status(), 415);
   await page.goto(`${base.origin}/admin/login`);
   await page.locator('[name="username"]').fill("localtest");
   await page.locator('[name="password"]').fill("localtestpassword");
@@ -80,6 +84,13 @@ try {
   await page.getByRole("button", { name: "Save changes" }).click();
   const updated = await db.query("SELECT status, internal_note FROM crunchify_private.inquiries WHERE id=$1", [id]);
   assert.deepEqual(updated.rows[0], { status: "contacted", internal_note: "Synthetic recovery note" });
+  const hugeUpdate = await page.request.post(`${base.origin}/api/admin/inquiries/${id}`, { headers: { origin: base.origin, "content-type": "application/x-www-form-urlencoded" }, data: "x".repeat(65537) });
+  assert.equal(hugeUpdate.status(), 413);
+  const longNote = "界".repeat(5000);
+  await page.locator('[name="note"]').fill(longNote);
+  await page.getByRole("button", { name: "Save changes" }).click();
+  const unicodeUpdate = await db.query("SELECT internal_note FROM crunchify_private.inquiries WHERE id=$1", [id]);
+  assert.equal(unicodeUpdate.rows[0].internal_note, longNote);
   console.log("Isolated wholesale and partner persistence, spam/rate limits, expired session, email failure and admin retry/update passed.");
 } finally {
   if (id) await db.query("DELETE FROM crunchify_private.inquiries WHERE id=$1 AND details->>'company'=$2", [id, company]);

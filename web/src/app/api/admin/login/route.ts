@@ -2,10 +2,15 @@ import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { adminCookie, checkCredentials, makeSession } from "@/server/security/admin";
 import { database } from "@/server/db";
+import { readLimitedBody } from "@/server/security/read-limited-body";
 export async function POST(request: Request) {
   const url = new URL(request.url);
   if (request.headers.get("origin") !== url.origin) return new Response("Invalid request", { status: 403 });
-  const form = await request.formData();
+  if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/x-www-form-urlencoded") return new Response("Unsupported request", { status: 415 });
+  let body: string | null;
+  try { body = await readLimitedBody(request, 8192); } catch { return new Response("Invalid request", { status: 400 }); }
+  if (body === null) return new Response("Request is too large", { status: 413 });
+  const form = new URLSearchParams(body);
   const username = String(form.get("username") || "").slice(0, 200);
   const password = String(form.get("password") || "").slice(0, 512);
   try {
