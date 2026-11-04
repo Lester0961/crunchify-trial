@@ -5,7 +5,7 @@ This is a runbook for the optional bonus, not evidence of a completed migration.
 ## Prerequisites
 
 - Company-approved VPS, operating-system access, domain and DNS control, TLS termination and an owner for maintenance.
-- Approved production database destination, backup and restore procedure, and a separate staging database. Vercel preview and production share one Supabase database and credentials; new previews use a separate schema, but historical previews can still use production tables. Do not use production leads for destructive tests.
+- Approved production database destination, backup and restore procedure, and a separate staging database. Vercel preview and production share one Supabase database. New previews use a separate schema and restricted credential; historical previews can retain the former production credential until rotation. Do not use production leads for destructive tests.
 - Company-approved Brevo account, authenticated sender domain and notification recipient. The present Gmail sender and personal recipient are temporary; messages may be rewritten and filtered as spam.
 - Complete production brand fonts, confirmed contact details, privacy wording and final acceptance criteria. The user confirmed supplied assets are approved; the banana package image and dossier show different sizes.
 - A maintenance window, rollback owner, tested database backup and a record of the current Vercel deployment and DNS values.

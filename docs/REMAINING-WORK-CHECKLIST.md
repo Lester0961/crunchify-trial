@@ -25,7 +25,7 @@
 - [ ] Test the separate brand/media flow with the final company-approved fields and routing.
 - [ ] Review and test server-side validation, spam/rate limiting, unauthorized admin access, session expiry/sign-out, and write-action authorization. Verify no credentials or customer data are exposed.
 - [ ] Recheck admin search, type/status filters, counts, inquiry details, notes, status updates and email-retry warning on mobile and desktop. Test recovery after a provider failure using the final provider settings.
-- [ ] Establish full preview/production isolation with separate databases and restricted credentials, or agree a company-approved strategy. New preview deployments now use a separate schema; they still share a database and credentials, and older previews can still use production tables.
+- [ ] Establish full preview/production isolation with separate databases and restricted credentials, or agree a company-approved strategy. New preview deployments now use a separate schema and restricted credential but share the same database. Older previews can retain the former production credential until it is rotated.
 - [ ] Establish and test a database backup and restore process. Set appropriate account permissions, retention and operational ownership.
 - [ ] Rotate and securely hand over staff credentials, API keys and session secret. Remove old temporary admin-test files from the Windows Temp folder; prior protected deployments can retain earlier configuration.
 
@@ -86,3 +86,5 @@
 - [ ] Review production row-level security. Supabase reported RLS disabled on the private production tables. Direct privilege checks found no schema usage or table SELECT/INSERT/UPDATE/DELETE grants for anon, authenticated or service_role. Do not enable policies blindly; verify the application role and owner-approved access design first. Preview tables have RLS enabled with no public policies.
 
 - [x] After schema routing changed, the Linux Docker smoke test passed again and live mobile/desktop admin sign-in and sign-out smoke checks passed.
+
+- [x] New previews use the restricted `crunchify_preview_app` database role over certificate-verified TLS. The role has no production schema usage or inquiry-table read access. Vercel now supplies the production database variable only to Production and the restricted variable only to Preview. A protected preview inquiry passed and its exact synthetic record was removed; both messages reached the temporary inbox. Historical deployments can retain old environment values, so production credential rotation and separate projects remain open.
