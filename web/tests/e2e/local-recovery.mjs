@@ -88,6 +88,12 @@ try {
   await page.locator('[name="status"]').selectOption("contacted");
   await page.locator('[name="note"]').fill("Synthetic recovery note");
   await page.getByRole("button", { name: "Save changes" }).click();
+  await page.getByRole("heading", { name: "Change history" }).waitFor();
+  await page.getByText("Status: new → contacted").waitFor();
+  await page.getByText("Updated note: Synthetic recovery note").waitFor();
+  const history = await db.query(`SELECT old_status, new_status, new_note FROM ${schema}.inquiry_history WHERE inquiry_id=$1`, [id]);
+  assert.equal(history.rowCount, 1);
+  assert.deepEqual(history.rows[0], { old_status: "new", new_status: "contacted", new_note: "Synthetic recovery note" });
   const updated = await db.query(`SELECT status, internal_note FROM ${schema}.inquiries WHERE id=$1`, [id]);
   assert.deepEqual(updated.rows[0], { status: "contacted", internal_note: "Synthetic recovery note" });
   const hugeUpdate = await page.request.post(`${base.origin}/api/admin/inquiries/${id}`, { headers: { origin: base.origin, "content-type": "application/x-www-form-urlencoded" }, data: "x".repeat(65537) });
