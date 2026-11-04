@@ -39,19 +39,28 @@ jobs:
             if [ "$attempt" = 40 ]; then docker logs crunchify-ci-app; exit 1; fi
             sleep 2
           done
+          echo 'Application is responding.'
           curl -fsS http://localhost:3000/brand/banana-pack.webp -o /dev/null
+          echo 'Static brand image loaded.'
           id=$(node -e "process.stdout.write(require('crypto').randomUUID())")
           jq -n --arg id "$id" '{type:"wholesale",company:"Synthetic Docker test",contact:"Test",email:"test@example.invalid",phone:"1234567",businessType:"Retailer",territory:"Test",volume:"100",products:["banana-crunch"],message:"Disposable test",website:"",source:"/",utm:{utm_source:"docker-ci"},submissionId:$id}' > "$RUNNER_TEMP/inquiry.json"
           curl -fsS -H 'Content-Type: application/json' --data-binary @"$RUNNER_TEMP/inquiry.json" http://localhost:3000/api/inquiries | jq -e '.ok == true and .notificationPending == true' >/dev/null
           test "$(docker exec crunchify-ci-db psql -U postgres -d crunchify -tAc "SELECT count(*) FROM crunchify_private.inquiries WHERE id='$id' AND details->'utm'->>'utm_source'='docker-ci'")" = 1
+          echo 'Synthetic inquiry persisted.'
           code=$(curl -sS -o /dev/null -w '%{http_code}' -c "$RUNNER_TEMP/cookies" -H 'Origin: http://localhost:3000' --data-urlencode 'username=test' --data-urlencode 'password=test-password' http://localhost:3000/api/admin/login)
+          echo "Admin login HTTP $code"
           test "$code" = 303
           code=$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" http://localhost:3000/admin)
+          echo "Authenticated admin HTTP $code"
           test "$code" = 200
           code=$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" -H 'Origin: http://localhost:3000' --data-urlencode 'status=contacted' --data-urlencode 'note=Synthetic test' "http://localhost:3000/api/admin/inquiries/$id")
+          echo "Admin update HTTP $code"
           test "$code" = 303
           test "$(docker exec crunchify-ci-db psql -U postgres -d crunchify -tAc "SELECT status FROM crunchify_private.inquiries WHERE id='$id'")" = contacted
           echo 'Docker build, non-root runtime, inquiry persistence, and admin update passed.'
+      - name: Show test container logs on failure
+        if: failure()
+        run: docker logs crunchify-ci-app 2>&1 || true
       - name: Remove disposable containers
         if: always()
         run: |
