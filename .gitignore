@@ -7,5 +7,6 @@ web/node_modules/
 web/.next/
 web/.env*
 !web/.env.example
+admin-generated.env
 __pycache__/
 *.log
