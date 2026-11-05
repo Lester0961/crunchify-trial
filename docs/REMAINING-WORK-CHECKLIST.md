@@ -60,6 +60,7 @@
 - [ ] Decide the production branch and release process. Automatic production Git builds are currently guarded; production deployments have been promoted explicitly after checks.
 - [ ] Review [HANDOVER.md](HANDOVER.md), verify setup instructions from a clean checkout, and deliver the repository and review link to the company when ready.
 - [x] On 5 November, a fresh checkout at `a21e5cc` passed `npm ci`, lint, build and all 14 integration tests using Node 24.22.2. The root README now reflects the configured trial; the new admin-credential generator was tested without changing the live credentials. Company handover and acceptance remain open.
+- [x] Used that clean checkout to generate disposable admin credentials and run the documented database setup against a new loopback-only PostgreSQL database. All five tables and four seed products were present; mobile and desktop browser sign-in/sign-out passed, and a synthetic local inquiry persisted with attribution and correctly reported disabled email. The disposable database and generated test credential files were removed. This did not test a fresh hosted deployment or company mail setup.
 - [ ] Receive Mathew's consolidated feedback, apply the agreed corrections, and obtain written acceptance of core deliverables and any bonus work.
 
 ## Optional VPS bonus: deferred at your request
