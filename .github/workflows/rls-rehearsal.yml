@@ -1,0 +1,75 @@
+name: PostgreSQL 17 RLS rehearsal
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rls-rehearsal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Test application and synthetic backups under RLS
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create crunchify-rls-ci
+          docker run -d --name crunchify-rls-db --network crunchify-rls-ci \
+            -e POSTGRES_PASSWORD=local-test-only -e POSTGRES_DB=crunchify postgres:17-alpine
+          for attempt in {1..40}; do
+            if docker exec crunchify-rls-db psql -U postgres -d crunchify -tAc 'SELECT 1' >/dev/null 2>&1; then break; fi
+            if [ "$attempt" = 40 ]; then echo 'PostgreSQL did not become ready'; exit 1; fi
+            sleep 2
+          done
+          for file in web/database/migrations/001_inquiries.sql web/database/migrations/002_inquiry_history.sql web/database/migrations/003_admin_sessions.sql web/database/seed/001_products.sql web/tests/fixtures/rls-ci-roles.sql web/tests/fixtures/rls-rehearsal.sql; do
+            docker exec -i crunchify-rls-db psql -U postgres -d crunchify -v ON_ERROR_STOP=1 < "$file" >/dev/null
+          done
+          test "$(docker exec crunchify-rls-db psql -U postgres -d crunchify -qAtc "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='crunchify_private' AND c.relkind='r' AND c.relrowsecurity")" = 5
+          test "$(docker exec crunchify-rls-db psql -U postgres -d crunchify -qAtc "SET ROLE crunchify_rls_guest; SELECT count(*) FROM crunchify_private.products")" = 0
+          docker build -t crunchify-rls-ci web
+          hash=$(node -e "const c=require('crypto');process.stdout.write('test-salt:'+c.scryptSync('test-password','test-salt',64).toString('hex'))")
+          docker run -d --name crunchify-rls-app --network crunchify-rls-ci -p 127.0.0.1:3000:3000 \
+            -e DATABASE_URL='postgresql://crunchify_production_app:local-test-only@crunchify-rls-db:5432/crunchify' \
+            -e ADMIN_USER=test -e ADMIN_PASSWORD_HASH="$hash" \
+            -e ADMIN_SESSION_SECRET='isolated-ci-session-secret-0123456789abcdef' crunchify-rls-ci
+          for attempt in {1..40}; do
+            if curl -fsS http://localhost:3000/ -o /dev/null; then break; fi
+            if [ "$attempt" = 40 ]; then docker logs crunchify-rls-app; exit 1; fi
+            sleep 2
+          done
+          id=$(node -e "process.stdout.write(require('crypto').randomUUID())")
+          jq -n --arg id "$id" '{type:"wholesale",company:"Synthetic RLS test",contact:"Test",email:"test@example.invalid",phone:"1234567",businessType:"Retailer",territory:"Test",volume:"100",products:["banana-crunch"],message:"Disposable test",website:"",source:"/",utm:{utm_source:"rls-ci"},submissionId:$id}' > "$RUNNER_TEMP/inquiry.json"
+          curl -fsS -H 'Content-Type: application/json' --data-binary @"$RUNNER_TEMP/inquiry.json" http://localhost:3000/api/inquiries | jq -e '.ok == true and .notificationPending == true' >/dev/null
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -c "$RUNNER_TEMP/cookies" -H 'Origin: http://localhost:3000' --data-urlencode 'username=test' --data-urlencode 'password=test-password' http://localhost:3000/api/admin/login)
+          test "$code" = 303
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" http://localhost:3000/admin)" = 200
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" -H 'Origin: http://localhost:3000' --data-urlencode 'status=contacted' --data-urlencode 'note=Synthetic RLS note' "http://localhost:3000/api/admin/inquiries/$id")" = 303
+          test "$(docker exec crunchify-rls-db psql -U postgres -d crunchify -qAtc "SELECT count(*) FROM crunchify_private.inquiry_history WHERE inquiry_id='$id' AND new_status='contacted'")" = 1
+          cp "$RUNNER_TEMP/cookies" "$RUNNER_TEMP/copied-cookies"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/cookies" -H 'Origin: http://localhost:3000' -X POST http://localhost:3000/api/admin/logout)" = 303
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -b "$RUNNER_TEMP/copied-cookies" http://localhost:3000/admin)" = 307
+          if docker exec -e PGPASSWORD=local-test-only crunchify-rls-db pg_dump -h 127.0.0.1 -U crunchify_backup_app -d crunchify -Fc -n crunchify_private -f /tmp/default.dump >"$RUNNER_TEMP/dump.log" 2>&1; then
+            echo 'Expected the ordinary dump to fail under RLS'; exit 1
+          fi
+          grep -qi 'row-level security' "$RUNNER_TEMP/dump.log"
+          docker exec -e PGPASSWORD=local-test-only crunchify-rls-db pg_dump -h 127.0.0.1 -U crunchify_backup_app -d crunchify -Fc -n crunchify_private --no-owner --no-acl --enable-row-security --inserts -f /tmp/synthetic.dump
+          docker exec crunchify-rls-db createdb -U postgres synthetic_restore
+          docker exec crunchify-rls-db pg_restore -U postgres -d synthetic_restore --no-owner --no-acl --exit-on-error /tmp/synthetic.dump
+          counts="SELECT (SELECT count(*) FROM crunchify_private.products),(SELECT count(*) FROM crunchify_private.inquiries),(SELECT count(*) FROM crunchify_private.inquiry_history),(SELECT count(*) FROM crunchify_private.rate_limits),(SELECT count(*) FROM crunchify_private.admin_sessions)"
+          owner=$(docker exec crunchify-rls-db psql -U postgres -d crunchify -qAtc "$counts")
+          visible=$(docker exec -e PGPASSWORD=local-test-only crunchify-rls-db psql -h 127.0.0.1 -U crunchify_backup_app -d crunchify -qAtc "$counts")
+          restored=$(docker exec crunchify-rls-db psql -U postgres -d synthetic_restore -qAtc "$counts")
+          test "$owner" = "$visible" && test "$owner" = "$restored"
+          echo 'PostgreSQL 17 RLS application and synthetic backup rehearsal passed.'
+      - name: Show application logs on failure
+        if: failure()
+        run: docker logs crunchify-rls-app 2>&1 || true
+      - name: Remove disposable containers
+        if: always()
+        run: |
+          docker rm -f crunchify-rls-app crunchify-rls-db 2>/dev/null || true
+          docker network rm crunchify-rls-ci 2>/dev/null || true
