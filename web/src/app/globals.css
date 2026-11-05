@@ -104,3 +104,15 @@ h2{font-size:clamp(36px,3.7vw,50px);line-height:1.18}
 .product-card h2{font-family:KitPoppins,Arial,Helvetica,sans-serif;color:var(--ink);font-size:21px;font-weight:600;letter-spacing:normal;line-height:1.5;margin-top:19px}
 @media(max-width:700px){.product-card h2{margin-top:16px}}
 .admin-alert{margin:0 0 24px;padding:16px 18px;border-left:4px solid #8f5035;background:#fff0c7;line-height:1.5}.admin-alert-label{display:inline-block;color:#743a24;font-weight:700;font-size:14px;margin-top:4px}
+
+/* Trial refresh: a quiet produce-inspired canvas keeps the supplied packs in focus. */
+:root{--brown:#573a2b;--cream:#e7efda;--green:#365b3b;--paper:#fff;--off:#f8f7f0;--gray:#5c665d;--ink:#202b21;--line:#dfe5db}
+.hero{background:#edf3e7}
+.hero-photo{background:#dfead7}
+.hero-copy .eyebrow,.section-heading .eyebrow,.why .eyebrow,.partner .eyebrow{color:var(--green)}
+.product-photo{background:#edf3e7}
+.partner{background:var(--cream)}
+.button,.header-action,.product-photo img,.crunch-accent img{transition:background-color .2s ease,color .2s ease,transform .35s ease}
+.header-action:hover{background:var(--brown);color:#fff}
+@media(hover:hover){.product-photo:hover img{transform:scale(1.035)}.crunch-accent:hover img{transform:rotate(6deg)}}
+@media(prefers-reduced-motion:reduce){.button,.header-action,.product-photo img,.crunch-accent img{transition:none}.product-photo:hover img,.crunch-accent:hover img{transform:none}}
