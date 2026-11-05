@@ -4,21 +4,21 @@
 
 Retain the supplied logo, product photography and Poppins font files. Use the supplied cocoa, leaf green and warm snack palette as the base: cocoa `#573a2b`, leaf `#365b3b`, oat `#f8f7f0`, pistachio `#e7efda`, warm yellow `#fff0c7`, ink `#202b21`. Keep product photography prominent and surfaces calm. Use motion only to confirm interaction: gentle button color change and a small product-image hover on devices that support hover. No popups, carousels, auto-playing motion or floating prompts; disable decorative motion when reduced motion is requested.
 
-## Page and board review
+## Page and board fixes
 
-| Board(s) | Page / state | Review and planned work |
+| Board(s) | Page / state | Implemented alignment |
 | --- | --- | --- |
-| 01, 11, 23 | Home, mobile menu and full mobile scroll | Keep the arched mobile hero, product range, why-stock section, partnership callout and footer. Verify every CTA and menu destination. |
-| 02, 17 | Product collection, filters and mobile product path | Keep four supplied products, category filters and clear detail links. Verify filter counts, current state, tap target and image behavior. |
-| 03, 14 | Product detail and variants | Match image/spec/quote hierarchy. Add the missing return breadcrumb and related-range callout; preserve selected-product prefill. Hide unconfirmed specifications. |
-| 04, 18 | Wholesale page and form entry | Expand the sparse wholesale page to the board's product-led introduction, accurate benefits and inquiry CTA. Keep all claims sourced. |
-| 05, 06, 20 | Wholesale form and ready, validation, success, failure states | Preserve all agreement fields and attribution, make field errors and retry obvious, retain entered values, and give every control a comfortable touch target. |
-| 07, 20 | Brand/media inquiry | Match the partnership introduction and form. Keep proposed fields simple and verify validation, save and email states. |
-| 08, 16 | Admin sign-in and mobile access | Use the separate staff shell and centered sign-in panel. No public header or footer inside admin. |
-| 09, 19, 21 | Admin inquiry list, filters, empty state | Keep sidebar on desktop and compact staff navigation on mobile. Make columns/actions explicit on desktop and readable stacked cards on mobile. Match user-facing status labels to the board. |
-| 10, 19, 22 | Admin detail and follow-up | Keep contact/business/message readable; place follow-up beside details on desktop and below on mobile. Keep back, sign-out, save and email retry reachable. |
-| 12, 21 | Privacy and not-found | Keep quiet support layouts, legible text, and a clear return route at all widths. |
-| 13, 15 | System flow and brand elements | These are reference/system boards, not separate routes. Preserve their source, attribution and visual-identity intent in the real flows. |
+| 01, 11, 23 | Home, mobile menu and full mobile scroll | Retained the arched product hero, range, why-stock section, partnership callout and footer; checked each CTA and mobile menu destination. |
+| 02, 17 | Product collection, filters and mobile product path | Kept all four supplied products; checked category counts, selected state, detail links and tap behavior. |
+| 03, 14 | Product detail and variants | Added the return breadcrumb and related-range callout; kept supplied facts only and confirmed the quote link preselects its product. |
+| 04, 18 | Wholesale page and form entry | Rebuilt the page around the supplied product photo, verified benefits and inquiry path; avoided unsupported claims. |
+| 05, 06, 20 | Wholesale form and ready, validation, success, failure states | Kept form fields and attribution; verified native required-field validation, loading, success, pending-notification, failure and retry feedback. |
+| 07, 20 | Brand/media inquiry | Added a small supplied-crumb accent, matched the form heading to the layout and verified validation and response states. |
+| 08, 16 | Admin sign-in and mobile access | Added a centered sign-in panel and separate staff shell; removed the public header/footer from staff pages. |
+| 09, 19, 21 | Admin inquiry list, filters, empty state | Added clear company/type/status/date/open columns, readable mobile cards, search and filters; aligned “In progress” wording with the boards. |
+| 10, 19, 22 | Admin detail and follow-up | Split inquiry details and follow-up into responsive cards; kept history, save, email retry, back navigation and sign-out reachable. |
+| 12, 21 | Privacy and not-found | Retained quiet support pages, readable copy and clear routes back into the site. |
+| 13, 15 | System flow and brand elements | Kept these as reference boards; applied their attribution, packaging and brand-element intent to the real flows. |
 
 ## Route and module inventory
 
@@ -50,12 +50,14 @@ Retain the supplied logo, product photography and Poppins font files. Use the su
 - Exercised 14 public/product/system routes at 320, 390, 768, 1024 and 1440 CSS pixels. All returned below 500 and had no horizontal overflow. Exercised the mobile menu, category filters and counts, product-to-quote preselection, and failed form submission with retained values and a clear retry label.
 - Ran axe-core on 8 routes at 390 and 1440 pixels against WCAG 2.0/2.1/2.2 A and AA. No violations were reported. Verified the keyboard skip link, visible focus, reduced-motion behavior and the subtle normal desktop hover.
 - `npm run lint`, `npm run build` and all 16 integration checks pass.
-- Visual review found and corrected narrow-screen overflow on product details, the stretched admin-shell logo, an oversized partnership heading and a clipped form example. Admin sign-in could not be verified in the local checkout: its local environment has no database connection and does not contain the live admin credentials.
+- Visual review found and corrected narrow-screen overflow on product details, the stretched admin-shell logo, an oversized partnership heading and a clipped form example. The local checkout has no database connection or live admin settings; hosted Preview and Production sign-in were verified instead.
 
-## Remaining release checks
+## Release results — 6 November 2026
 
-1. Deploy the branch to a protected Vercel Preview and review the authenticated admin list/detail at phone and desktop widths, including navigation, search/filter and sign-out. Avoid saving test notes or retrying actual email during a layout review.
-2. Verify the preview build and all public routes/images at desktop and mobile. Promote the reviewed deployment only after these checks pass.
-3. Only if a real trial transaction is needed, use a clearly identified submission to the owner's test inbox, verify its record and messages, then delete that exact test record. No trial transaction is required for this visual pass.
+- Deployed the reviewed UI commit `61c7557` to [crunchify.vercel.app](https://crunchify.vercel.app). All 14 routes passed at 320, 390, 768, 1024 and 1440 pixels without horizontal overflow. Poppins and page images loaded in representative mobile and desktop views.
+- Production staff sign-in, no-public-header/footer layout, search/empty state, staff links and sign-out were checked without editing inquiries or retrying email. Preview inquiry-list and detail cards were checked with a marked temporary row at all five widths; filters and unsaved status/note controls worked, and the conditional retry control appeared. No email retry was sent. The row was deleted and the database confirmed no matching test record remained.
+- Form success and pending-notification states were tested with browser-intercepted responses, so no database rows or emails were created. Required-field validation, loading/disabled state, error retention and retry feedback were also checked.
+- Temporary Vercel preview access links were revoked after review. The project's prior ignored-build rule was restored after the explicit production build.
+- `npm run lint`, `npm run build`, all 16 integration checks, keyboard focus and reduced-motion checks passed. Axe reported no WCAG 2.0/2.1/2.2 A/AA violations on the eight audited pages at 390 and 1440 pixels.
 
 VPS migration remains excluded at the user's direction.
