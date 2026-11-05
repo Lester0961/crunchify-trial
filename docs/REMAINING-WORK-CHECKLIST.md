@@ -59,6 +59,7 @@
 - [ ] Confirm Vercel, GitHub, Supabase, Brevo, domain, DNS, backup and billing ownership with the company. Keep the repository private and provide access through an agreed handover.
 - [ ] Decide the production branch and release process. Automatic production Git builds are currently guarded; production deployments have been promoted explicitly after checks.
 - [ ] Review [HANDOVER.md](HANDOVER.md), verify setup instructions from a clean checkout, and deliver the repository and review link to the company when ready.
+- [x] On 5 November, a fresh checkout at `a21e5cc` passed `npm ci`, lint, build and all 14 integration tests using Node 24.22.2. The root README now reflects the configured trial; the new admin-credential generator was tested without changing the live credentials. Company handover and acceptance remain open.
 - [ ] Receive Mathew's consolidated feedback, apply the agreed corrections, and obtain written acceptance of core deliverables and any bonus work.
 
 ## Optional VPS bonus: deferred at your request
