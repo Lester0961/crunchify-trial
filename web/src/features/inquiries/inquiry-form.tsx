@@ -46,7 +46,7 @@ export function InquiryForm({ type, initialProduct = "" }: { type: "wholesale" |
   return <form className="inquiry-form" method="post" action="/api/inquiries" onSubmit={submit}>
     <noscript><p className="form-error">Please enable JavaScript to send this inquiry.</p></noscript>
     <div className="form-grid">
-      <label>Company name<input name="company" required maxLength={150} autoComplete="organization" {...fieldProps("company")} />{fieldError("company")}</label>
+      <label>{type === "partner" ? "Organization" : "Company name"}<input name="company" required maxLength={150} autoComplete="organization" {...fieldProps("company")} />{fieldError("company")}</label>
       <label>Contact person<input name="contact" required maxLength={120} autoComplete="name" {...fieldProps("contact")} />{fieldError("contact")}</label>
       <label>Email address<input name="email" type="email" required maxLength={254} autoComplete="email" {...fieldProps("email")} />{fieldError("email")}</label>
       {type === "wholesale" ? <>
@@ -54,12 +54,12 @@ export function InquiryForm({ type, initialProduct = "" }: { type: "wholesale" |
         <label>Business type<select name="businessType" required defaultValue="" {...fieldProps("businessType")}><option value="" disabled>Select business type</option><option>Distributor</option><option>Reseller</option><option>Retailer</option><option>Other</option></select>{fieldError("businessType")}</label>
         <label>Territory or location<input name="territory" required maxLength={150} {...fieldProps("territory")} />{fieldError("territory")}</label>
         <label>Estimated monthly volume<input name="volume" required maxLength={100} placeholder="For example, 100 packs" {...fieldProps("volume")} />{fieldError("volume")}</label>
-      </> : <label>Collaboration type<input name="businessType" maxLength={80} placeholder="For example, media or brand partnership" {...fieldProps("businessType")} />{fieldError("businessType")}</label>}
+      </> : <label>Collaboration type<input name="businessType" maxLength={80} placeholder="For example, media or brand" {...fieldProps("businessType")} />{fieldError("businessType")}</label>}
     </div>
     {type === "wholesale" && <fieldset aria-describedby={productError ? "products-error" : undefined}><legend>Products of interest</legend><div className="checkboxes">{products.map(p => <label key={p.slug}><input type="checkbox" name="products" value={p.slug} defaultChecked={p.slug === initialProduct} />{p.name}</label>)}</div>{productError && <p id="products-error" className="form-error">{productError}</p>}</fieldset>}
     <label>Message<textarea name="message" required maxLength={5000} rows={6} {...fieldProps("message")} />{fieldError("message")}</label>
     <div className="honey" aria-hidden="true"><label>Leave this field empty<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
     {state === "error" && <p role="alert" className="form-error">{error}</p>}
-    <button className="button button-primary" type="submit" disabled={state === "sending"}>{state === "sending" ? "Sending…" : "Send inquiry"}</button>
+    <button className="button button-primary" type="submit" disabled={state === "sending"}>{state === "sending" ? "Sending…" : state === "error" ? "Try again" : "Send inquiry"}</button>
   </form>;
 }
