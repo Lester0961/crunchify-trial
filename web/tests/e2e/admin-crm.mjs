@@ -43,6 +43,10 @@ try {
     await page.getByRole("button", { name: "Apply filters" }).click();
     assert.equal(await page.locator(".admin-row").count(), 1);
     assert.equal(await page.locator(".admin-row").first().getAttribute("href"), `/admin/inquiries/${ids[1]}`);
+    await page.locator(".admin-row").first().click();
+    await page.getByText("Collaboration type", { exact: true }).waitFor();
+    await page.getByText("Media", { exact: true }).waitFor();
+    await page.goBack();
     await page.locator('[name="status"]').selectOption("closed");
     await page.getByRole("button", { name: "Apply filters" }).click();
     await page.getByText("No inquiries match these filters.").waitFor();
@@ -54,6 +58,9 @@ try {
     await page.locator(`a[href="/admin/inquiries/${ids[0]}"]`).click();
     await page.getByText("Synthetic CRM message").waitFor();
     await page.getByText(/crm-test/).waitFor();
+    for (const label of ["Contact person", "Business type", "Products of interest", "First page visited", "UTM source"]) await page.getByText(label, { exact: true }).waitFor();
+    await page.getByText("Banana Crunch", { exact: true }).waitFor();
+    assert.equal(await page.getByText('["banana-crunch"]', { exact: true }).count(), 0);
     await page.getByText("Sender email: failed · Company email: failed").waitFor();
     await page.getByRole("button", { name: "Retry pending emails" }).click();
     await page.getByText("Sender email: failed · Company email: failed").waitFor();

@@ -13,6 +13,8 @@ try {
     await page.goto(base.origin);
     const hero = page.locator(".hero-photo img");
     await hero.waitFor();
+    const headingWeights = await page.locator(".hero h1").evaluate((heading) => ({ first: Number(getComputedStyle(heading).fontWeight), second: Number(getComputedStyle(heading.querySelector("span")).fontWeight) }));
+    assert.ok(headingWeights.second < headingWeights.first, "The second headline line should use the lighter approved treatment");
     assert.equal(await hero.getAttribute("fetchpriority"), "high");
     await page.waitForFunction(() => { const image = document.querySelector(".hero-photo img"); return image?.complete && image.naturalWidth > 0; });
     const images = page.locator(".product-grid .product-photo img");
