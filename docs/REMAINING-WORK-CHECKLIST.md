@@ -19,6 +19,8 @@
 - [ ] Obtain and implement company-approved privacy wording, including how inquiries and attribution are handled.
 - [ ] Obtain the written post-kickoff requirements/acceptance summary referenced by the agreement, or confirm that the company has supplied no additional criteria.
 
+- [x] Aligned the homepage headline weights and ingredient copy with the approved wireframe and dossier. Admin inquiry details now present named products, ordered contact fields, attribution, and readable labels; synthetic local and hosted-preview checks covered mobile and desktop, and the preview record was removed.
+
 ## Complete functional and security verification
 
 - [ ] Test the full wholesale flow in an actual browser after the final mail configuration: all nine fields, product selection, source/UTM values, saved record, both email receipts, success and failure behavior, and duplicate/retry handling.
