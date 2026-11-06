@@ -1,5 +1,7 @@
 # Crunchify — product story redesign
 
+Released to production on 6 November 2026 from `Frontend`, UI commit `8f4f02b`. See [PRODUCTION-RELEASE.md](PRODUCTION-RELEASE.md) for deployment, verification and rollback details.
+
 ## Design intent
 
 Build a premium, approachable snack site around the supplied photography. The memorable element is a four-product scroll story: original product photographs sit on layered cards that gently turn as their matching information enters view. The sequence has a clear end at the wholesale inquiry path. Mobile and reduced-motion views show the same content as normal, spacious product panels.
