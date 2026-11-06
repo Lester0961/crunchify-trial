@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { BrandLogo } from "./brand-logo";
 import { CloseIcon, MenuIcon } from "./icons";
@@ -15,19 +15,42 @@ const navigation = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const current = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
+  useEffect(() => {
+    if (!open) return;
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    const desktop = window.matchMedia("(min-width: 961px)");
+    const resize = () => {
+      if (!desktop.matches) return;
+      const active = document.activeElement;
+      const inMenu =
+        active instanceof Element &&
+        (active.closest(".mobile-nav") || active === toggleRef.current);
+      setOpen(false);
+      if (inMenu)
+        headerRef.current
+          ?.querySelector<HTMLElement>(
+            ".desktop-nav a[aria-current], .desktop-nav a",
+          )
+          ?.focus({ preventScroll: true });
+    };
+    window.addEventListener("keydown", escape);
+    desktop.addEventListener("change", resize);
+    return () => {
+      window.removeEventListener("keydown", escape);
+      desktop.removeEventListener("change", resize);
+    };
+  }, [open]);
   return (
-    <header
-      className="site-header"
-      onKeyDown={(event) => {
-        if (event.key === "Escape" && open) {
-          setOpen(false);
-          toggleRef.current?.focus();
-        }
-      }}
-    >
+    <header className="site-header" ref={headerRef}>
       <div className="shell header-inner">
         <BrandLogo />
         <nav className="desktop-nav" aria-label="Main navigation">
@@ -60,33 +83,37 @@ export function SiteHeader() {
         id="mobile-navigation"
         className="mobile-nav"
         aria-label="Mobile navigation"
-        hidden={!open}
+        data-open={open}
+        aria-hidden={!open}
+        inert={!open}
       >
-        <div className="shell">
-          {navigation.map((item) => (
+        <div className="mobile-nav-viewport">
+          <div className="shell">
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={current(item.href) ? "page" : undefined}
+                onClick={() => setOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
             <Link
-              key={item.href}
-              href={item.href}
-              aria-current={current(item.href) ? "page" : undefined}
+              href="/inquire"
+              className="button button-primary"
               onClick={() => setOpen(false)}
             >
-              {item.label}
+              Become a Wholesale Partner
             </Link>
-          ))}
-          <Link
-            href="/inquire"
-            className="button button-primary"
-            onClick={() => setOpen(false)}
-          >
-            Become a Wholesale Partner
-          </Link>
-          <Link
-            className="mobile-staff-link"
-            href="/admin/login"
-            onClick={() => setOpen(false)}
-          >
-            Admin login
-          </Link>
+            <Link
+              className="mobile-staff-link"
+              href="/admin/login"
+              onClick={() => setOpen(false)}
+            >
+              Admin login
+            </Link>
+          </div>
         </div>
       </nav>
     </header>

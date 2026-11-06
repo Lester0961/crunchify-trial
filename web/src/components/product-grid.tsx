@@ -22,7 +22,11 @@ export function ProductGrid({
       className={`product-grid${excludeSlug ? " product-grid-related" : ""}`}
     >
       {visible.map((p) => (
-        <article className={`product-card tone-${p.tone}`} key={p.slug}>
+        <article
+          className={`product-card tone-${p.tone}`}
+          key={p.slug}
+          data-product={p.slug}
+        >
           <Link href={`/products/${p.slug}`} className="product-photo">
             <Image
               src={p.image}
@@ -54,7 +58,7 @@ export function ProductGrid({
             </div>
             <Link
               className="product-link"
-            aria-label={`View product: ${p.name}`}
+              aria-label={`View product: ${p.name}`}
               href={`/products/${p.slug}`}
             >
               View product

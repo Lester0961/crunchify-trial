@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { LoginForm } from "@/features/admin/login-form";
 export const metadata = { title: "Staff sign in" };
 export default async function Login({
   searchParams,
@@ -9,18 +9,9 @@ export default async function Login({
   return (
     <main className="shell admin-login-page">
       <div className="login-visual">
-        <div className="login-photo">
-          <Image
-            src="/brand/banana-crumbs.webp"
-            alt=""
-            width={600}
-            height={600}
-            sizes="40vw"
-          />
-        </div>
         <p>
-          Good conversations.
-          <br />A little more crunch.
+          A little order.
+          <br />A lot of good.
         </p>
       </div>
       <section className="admin-login-card">
@@ -29,33 +20,7 @@ export default async function Login({
         <p className="page-intro">
           Sign in to manage wholesale and partnership inquiries.
         </p>
-        <form
-          className="inquiry-form login-form"
-          action="/api/admin/login"
-          method="post"
-        >
-          <label>
-            Username
-            <input name="username" required autoComplete="username" />
-          </label>
-          <label>
-            Password
-            <input
-              type="password"
-              name="password"
-              required
-              autoComplete="current-password"
-            />
-          </label>
-          {error && (
-            <p className="form-error form-alert" role="alert">
-              Unable to sign in. Check your details and try again.
-            </p>
-          )}
-          <button className="button button-primary" type="submit">
-            Sign in
-          </button>
-        </form>
+        <LoginForm initialError={Boolean(error)} />
       </section>
     </main>
   );

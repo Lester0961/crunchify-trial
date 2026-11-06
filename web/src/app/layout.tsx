@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/site-shell";
+import { MotionPreferenceSync } from "@/components/motion-preferences";
 import "./globals.css";
 export const metadata: Metadata = {
   title: { default: "Crunchify | Wholesale", template: "%s | Crunchify" },
@@ -13,6 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <MotionPreferenceSync />
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>

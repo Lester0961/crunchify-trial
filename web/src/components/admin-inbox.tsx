@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { InboxIcon, OpenIcon, SearchIcon } from "./icons";
+import { InboxIcon, OpenIcon } from "./icons";
+import { InboxFilters } from "@/features/admin/inbox-filters";
 import {
   inquiryDate,
   kindLabel,
@@ -62,6 +63,14 @@ export function AdminInbox({
   nextHref,
 }: InboxProps) {
   const filtered = Boolean(q || status || type);
+  const query = new URLSearchParams();
+  if (q) query.set("q", q);
+  if (status) query.set("status", status);
+  if (type) query.set("type", type);
+  if (page > 1) query.set("page", String(page));
+  const returnTo = `/admin${query.size ? "?" + query : ""}`;
+  const detailHref = (id: string) =>
+    `/admin/inquiries/${id}${query.size ? "?returnTo=" + encodeURIComponent(returnTo) : ""}`;
   return (
     <main className="admin-page">
       <header className="admin-heading">
@@ -102,46 +111,12 @@ export function AdminInbox({
             {matchCount} {matchCount === 1 ? "inquiry" : "inquiries"}
           </span>
         </div>
-        <form className="admin-filters" action="/admin">
-          <label>
-            Search company or contact
-            <span className="search-field">
-              <SearchIcon />
-              <input
-                name="q"
-                type="search"
-                defaultValue={q}
-                maxLength={120}
-                placeholder="Search inquiries"
-              />
-            </span>
-          </label>
-          <label>
-            Status
-            <select name="status" defaultValue={status}>
-              <option value="">All statuses</option>
-              <option value="new">New</option>
-              <option value="contacted">In progress</option>
-              <option value="closed">Closed</option>
-            </select>
-          </label>
-          <label>
-            Type
-            <select name="type" defaultValue={type}>
-              <option value="">All inquiries</option>
-              <option value="wholesale">Wholesale</option>
-              <option value="partner">Brand & media</option>
-            </select>
-          </label>
-          <button className="button button-primary button-small" type="submit">
-            Apply filters
-          </button>
-          {filtered && (
-            <Link className="text-link clear-filters" href="/admin">
-              Clear filters
-            </Link>
-          )}
-        </form>
+        <InboxFilters
+          key={`${q}:${status}:${type}`}
+          q={q}
+          status={status}
+          type={type}
+        />
         {rows.length === 0 ? (
           <div className="admin-empty">
             <InboxIcon />
@@ -185,7 +160,7 @@ export function AdminInbox({
                       <td>
                         <Link
                           className="inquiry-company"
-                          href={`/admin/inquiries/${row.id}`}
+                          href={detailHref(row.id)}
                         >
                           {row.company}
                         </Link>
@@ -209,7 +184,7 @@ export function AdminInbox({
                         <Link
                           className="open-inquiry"
                           aria-label={`Open inquiry from ${row.company}`}
-                          href={`/admin/inquiries/${row.id}`}
+                          href={detailHref(row.id)}
                         >
                           <OpenIcon />
                         </Link>
@@ -227,9 +202,7 @@ export function AdminInbox({
                     <StatusBadge status={row.status} />
                   </div>
                   <h3>
-                    <Link href={`/admin/inquiries/${row.id}`}>
-                      {row.company}
-                    </Link>
+                    <Link href={detailHref(row.id)}>{row.company}</Link>
                   </h3>
                   <p>{row.contact}</p>
                   {needsEmail(row) && (
@@ -241,7 +214,7 @@ export function AdminInbox({
                     <time dateTime={new Date(row.created_at).toISOString()}>
                       {inquiryDate(row.created_at)}
                     </time>
-                    <Link href={`/admin/inquiries/${row.id}`}>
+                    <Link href={detailHref(row.id)}>
                       Open inquiry
                       <OpenIcon />
                     </Link>

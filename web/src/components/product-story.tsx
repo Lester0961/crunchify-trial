@@ -2,26 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import { useEffect, useRef } from "react";
 import { products } from "@/features/products/data";
+import { useMediaQuery, useReducedMotion } from "./motion-preferences";
 
-const motionQuery =
-  "(min-width: 960px) and (prefers-reduced-motion: no-preference)";
-function subscribe(callback: () => void) {
-  const media = window.matchMedia(motionQuery);
-  media.addEventListener("change", callback);
-  return () => media.removeEventListener("change", callback);
-}
-const clientSnapshot = () => window.matchMedia(motionQuery).matches;
-const serverSnapshot = () => false;
+const motionQuery = "(min-width: 960px) and (min-height: 640px)";
 
 export function ProductStory() {
   const rootRef = useRef<HTMLElement>(null);
-  const enhanced = useSyncExternalStore(
-    subscribe,
-    clientSnapshot,
-    serverSnapshot,
-  );
+  const wideEnough = useMediaQuery(motionQuery);
+  const reduced = useReducedMotion();
+  const enhanced = wideEnough && !reduced;
 
   useEffect(() => {
     const root = rootRef.current;
@@ -36,39 +27,68 @@ export function ProductStory() {
       root.querySelectorAll<HTMLAnchorElement>(".story-index a"),
     );
     let frame = 0;
-    const update = () => {
+    let needsMeasure = true;
+    let lastTime = 0;
+    let targets = cards.map(() => 0);
+    const offsets = cards.map(() => 0);
+    const update = (time: number) => {
       frame = 0;
-      const middle = window.innerHeight * 0.53;
-      const positions = chapters.map((chapter) => {
-        const rect = chapter.getBoundingClientRect();
-        return (rect.top + rect.height / 2 - middle) / window.innerHeight;
-      });
-      const active = positions.reduce(
-        (best, value, index) =>
-          Math.abs(value) < Math.abs(positions[best]) ? index : best,
-        0,
-      );
-      root.dataset.active = String(active);
+      if (document.hidden) return;
+      if (needsMeasure) {
+        needsMeasure = false;
+        const bounds = root.getBoundingClientRect();
+        if (bounds.bottom < 0 || bounds.top > window.innerHeight) {
+          lastTime = 0;
+          return;
+        }
+        const middle = window.innerHeight * 0.53;
+        const positions = chapters.map((chapter) => {
+          const rect = chapter.getBoundingClientRect();
+          return (rect.top + rect.height / 2 - middle) / window.innerHeight;
+        });
+        const active = positions.reduce(
+          (best, value, index) =>
+            Math.abs(value) < Math.abs(positions[best]) ? index : best,
+          0,
+        );
+        targets = positions.map((position) =>
+          Math.max(-1, Math.min(1, position)),
+        );
+        root.dataset.active = String(active);
+        cards.forEach((card, index) => {
+          card.style.opacity = index === active ? "1" : "0";
+        });
+        links.forEach((link, index) => {
+          if (index === active) link.setAttribute("aria-current", "location");
+          else link.removeAttribute("aria-current");
+        });
+      }
+      const blend = lastTime
+        ? 1 - Math.exp(-Math.min(time - lastTime, 32) / 65)
+        : 1;
+      lastTime = time;
+      let moving = false;
       cards.forEach((card, index) => {
-        const offset = Math.max(-1, Math.min(1, positions[index]));
-        card.style.opacity = index === active ? "1" : "0";
-        card.style.transform = `translate3d(0,${offset * 28}px,0) rotateX(${offset * -5}deg) rotateY(${offset * 8}deg) rotateZ(${index % 2 ? 3 : -3}deg)`;
+        offsets[index] += (targets[index] - offsets[index]) * blend;
+        moving ||= Math.abs(targets[index] - offsets[index]) > 0.002;
+        const offset = offsets[index];
+        card.style.transform = `translate3d(0,${offset * 28}px,0) rotateX(${offset * -4}deg) rotateY(${offset * 6}deg) rotateZ(${index % 2 ? 3 : -3}deg)`;
       });
-      links.forEach((link, index) => {
-        if (index === active) link.setAttribute("aria-current", "location");
-        else link.removeAttribute("aria-current");
-      });
+      if (moving) frame = requestAnimationFrame(update);
     };
     const schedule = () => {
+      needsMeasure = true;
       if (!frame) frame = requestAnimationFrame(update);
     };
-    update();
+    schedule();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
+    document.addEventListener("visibilitychange", schedule);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      document.removeEventListener("visibilitychange", schedule);
     };
   }, [enhanced]);
 

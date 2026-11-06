@@ -1,15 +1,17 @@
 import Link from "next/link";
+import Image from "next/image";
 export default function NotFound() {
   return (
     <main className="shell page-section not-found-page">
-      <span className="error-number" aria-hidden="true">
-        404
-      </span>
-      <h1>
-        This crumb
-        <br />
-        went missing.
-      </h1>
+      <Image
+        className="not-found-photo"
+        src="/brand/banana-crumbs.webp"
+        alt="Banana Crunch pieces"
+        width={160}
+        height={160}
+      />
+      <p className="section-kicker">Page not found</p>
+      <h1>A little off the path.</h1>
       <p className="page-intro">
         We couldn’t find that page. There’s still plenty of good crunch to
         explore.

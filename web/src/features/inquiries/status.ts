@@ -1,4 +1,7 @@
 export type InquiryStatus = "new" | "contacted" | "closed";
+export function isInquiryStatus(value: unknown): value is InquiryStatus {
+  return value === "new" || value === "contacted" || value === "closed";
+}
 const labels: Record<string, string> = {
   new: "New",
   contacted: "In progress",

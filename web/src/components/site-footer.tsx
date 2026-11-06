@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandLogo } from "./brand-logo";
+import { MotionToggle } from "./motion-preferences";
 export function SiteFooter() {
   return (
     <footer className="footer">
@@ -27,6 +28,7 @@ export function SiteFooter() {
       <div className="shell footer-bottom">
         <span>Crunchify</span>
         <div>
+          <MotionToggle />
           <Link href="/privacy">Privacy</Link>
           <Link href="/admin/login">Admin login</Link>
         </div>

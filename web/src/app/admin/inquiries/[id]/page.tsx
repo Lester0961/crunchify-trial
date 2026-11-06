@@ -13,7 +13,11 @@ export default async function InquiryDetail({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string; retried?: string }>;
+  searchParams: Promise<{
+    saved?: string;
+    retried?: string;
+    returnTo?: string;
+  }>;
 }) {
   if (!(await isAdmin())) redirect("/admin/login");
   const { id } = await params;
@@ -38,6 +42,11 @@ export default async function InquiryDetail({
   );
   const fields = formatInquiryDetails(details, inquiry.kind, productNames);
   const query = await searchParams;
+  const backHref =
+    typeof query.returnTo === "string" &&
+    (query.returnTo === "/admin" || query.returnTo.startsWith("/admin?"))
+      ? query.returnTo
+      : "/admin";
   return (
     <AdminDetail
       id={id}
@@ -50,6 +59,7 @@ export default async function InquiryDetail({
       status={inquiry.status}
       note={inquiry.internal_note || ""}
       history={history.rows}
+      backHref={backHref}
       notice={
         query.saved === "1"
           ? "saved"

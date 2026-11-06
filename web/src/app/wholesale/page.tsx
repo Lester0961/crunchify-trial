@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { StockBenefits } from "@/components/stock-benefits";
 import { WholesaleCallout } from "@/components/wholesale-callout";
+import { InquiryPreparation } from "@/components/inquiry-preparation";
 export const metadata = {
   title: "Wholesale",
   description:
@@ -45,14 +46,7 @@ export default function Wholesale() {
           starts here.
         </h2>
         <div>
-          <p>
-            Tell us a little about your business, where you operate and the
-            products that interest you.
-          </p>
-          <p>
-            Have an estimated monthly volume in mind? Include it in your inquiry
-            so we can understand what you’re looking for.
-          </p>
+          <InquiryPreparation />
           <Link className="text-link" href="/products">
             Explore all four products
           </Link>

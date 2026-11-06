@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { products } from "@/features/products/data";
 import { ProductGrid } from "@/components/product-grid";
+import { ProductGallery } from "@/components/product-gallery";
 import type { Metadata } from "next";
 export function generateStaticParams() {
   return products.map(({ slug }) => ({ slug }));
@@ -36,17 +36,7 @@ export default async function ProductPage({
         <span aria-current="page">{product.name}</span>
       </nav>
       <div className="detail-grid">
-        <div className="detail-photo">
-          <Image
-            src={product.image}
-            alt={`${product.name} package and snack`}
-            width={1000}
-            height={1242}
-            loading="eager"
-            fetchPriority="high"
-            sizes="(max-width: 760px) 90vw, 47vw"
-          />
-        </div>
+        <ProductGallery key={product.slug} product={product} />
         <div className="detail-copy">
           <p className="product-category">{product.category} snack</p>
           <h1>{product.name}</h1>

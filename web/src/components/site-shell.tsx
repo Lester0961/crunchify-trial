@@ -7,6 +7,7 @@ import { SiteFooter } from "./site-footer";
 import { Attribution } from "./attribution";
 import { BrandLogo } from "./brand-logo";
 import { InboxIcon, OpenIcon } from "./icons";
+import { SignoutForm } from "@/features/admin/signout-form";
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -28,7 +29,9 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <div className="staff-shell">
         <aside className="staff-sidebar">
           <div>
-            <BrandLogo href="/admin" label="Admin inquiries" />
+            <div className="staff-brand-mark">
+              <BrandLogo href="/admin" label="Admin inquiries" />
+            </div>
             <p className="staff-caption">Partner workspace</p>
           </div>
           <nav aria-label="Staff navigation">
@@ -45,13 +48,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
               View website
             </Link>
           </nav>
-          <form
-            className="staff-signout"
-            action="/api/admin/logout"
-            method="post"
-          >
-            <button type="submit">Sign out</button>
-          </form>
+          <SignoutForm />
         </aside>
         <div id="main-content" className="staff-content">
           {children}

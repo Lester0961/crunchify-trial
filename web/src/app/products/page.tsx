@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { ProductGrid } from "@/components/product-grid";
-import { products } from "@/features/products/data";
+import { ProductCollection } from "@/components/product-collection";
 import { WholesaleCallout } from "@/components/wholesale-callout";
 export const metadata = {
   title: "Our products",
@@ -26,24 +24,7 @@ export default async function Products({
             Find a little something good for your shelves.
           </p>
         </div>
-        <nav className="filters" aria-label="Product categories">
-          {["All", "Fruit", "Vegetable"].map((item) => (
-            <Link
-              key={item}
-              href={item === "All" ? "/products" : `/products?category=${item}`}
-              aria-current={selected === item ? "page" : undefined}
-            >
-              {item}
-              <span>
-                {item === "All"
-                  ? products.length
-                  : products.filter((product) => product.category === item)
-                      .length}
-              </span>
-            </Link>
-          ))}
-        </nav>
-        <ProductGrid category={selected} headingLevel={2} />
+        <ProductCollection category={selected} />
       </div>
       <WholesaleCallout />
     </main>

@@ -7,6 +7,8 @@ import {
 } from "@/features/inquiries/status";
 import { StatusBadge } from "./admin-inbox";
 import { CheckIcon } from "./icons";
+import { FollowupForm } from "@/features/admin/followup-form";
+import { RetryEmailsForm } from "@/features/admin/retry-emails-form";
 
 export type InquiryHistory = {
   id: number;
@@ -29,6 +31,7 @@ type DetailProps = {
   note: string;
   history: InquiryHistory[];
   notice?: "saved" | "retried";
+  backHref?: string;
 };
 
 function FieldValue({ field }: { field: DisplayField }) {
@@ -62,12 +65,13 @@ export function AdminDetail({
   note,
   history,
   notice,
+  backHref = "/admin",
 }: DetailProps) {
   const retry =
     senderEmailStatus !== "accepted" || companyEmailStatus !== "accepted";
   return (
     <main className="admin-page">
-      <Link className="text-link admin-back" href="/admin">
+      <Link className="text-link admin-back" href={backHref}>
         Back to inquiries
       </Link>
       <header className="admin-heading admin-detail-heading">
@@ -138,56 +142,22 @@ export function AdminDetail({
                 </dd>
               </div>
             </dl>
-            {retry ? (
-              <form method="post" action={`/api/admin/inquiries/${id}/retry`}>
-                <p>
-                  Check the provider’s delivery history before retrying. A
-                  timeout can leave delivery uncertain.
-                </p>
-                <button
-                  className="button button-outline button-small"
-                  type="submit"
-                >
-                  Retry pending emails
-                </button>
-              </form>
-            ) : (
-              <p className="field-hint">
-                Provider acceptance is not a delivery receipt.
-              </p>
-            )}
+            <RetryEmailsForm
+              action={`/api/admin/inquiries/${id}/retry?returnTo=${encodeURIComponent(backHref)}`}
+              needed={retry}
+            />
           </section>
         </div>
         <aside id="follow-up" className="admin-followup">
           <h2>Follow-up</h2>
           <p className="field-hint">Keep the next step clear for the team.</p>
-          <form
-            className="inquiry-form"
-            action={`/api/admin/inquiries/${id}`}
-            method="post"
-          >
-            <label>
-              Status
-              <select name="status" defaultValue={status}>
-                <option value="new">New</option>
-                <option value="contacted">In progress</option>
-                <option value="closed">Closed</option>
-              </select>
-            </label>
-            <label>
-              Internal note
-              <textarea
-                name="note"
-                defaultValue={note}
-                maxLength={5000}
-                rows={7}
-                placeholder="Add context or the next step."
-              />
-            </label>
-            <button className="button button-primary" type="submit">
-              Save changes
-            </button>
-          </form>
+          <FollowupForm
+            key={id}
+            id={id}
+            status={status}
+            note={note}
+            action={`/api/admin/inquiries/${id}?returnTo=${encodeURIComponent(backHref)}`}
+          />
         </aside>
       </div>
       <section className="change-history" aria-labelledby="change-history">
