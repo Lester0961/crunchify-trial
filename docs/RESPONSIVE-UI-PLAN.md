@@ -1,5 +1,7 @@
 # Crunchify UI alignment plan
 
+The visual direction below records the previous release. The current redesign and its complete page/motion plan are in [VISUAL-DIRECTION-V4.md](VISUAL-DIRECTION-V4.md); it supersedes the earlier visual treatment while retaining the original functional requirements.
+
 ## Visual direction
 
 Retain the supplied logo, product photography and Poppins font files. Use the supplied cocoa, leaf green and warm snack palette as the base: cocoa `#573a2b`, leaf `#365b3b`, oat `#f8f7f0`, pistachio `#e7efda`, warm yellow `#fff0c7`, ink `#202b21`. Keep product photography prominent and surfaces calm. Use motion only to confirm interaction: gentle button color change and a small product-image hover on devices that support hover. No popups, carousels, auto-playing motion or floating prompts; disable decorative motion when reduced motion is requested.

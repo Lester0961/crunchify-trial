@@ -1,4 +1,64 @@
 import Link from "next/link";
 import Image from "next/image";
-export const metadata = { title: "Wholesale" };
-export default function Wholesale() { return <main className="shell page-section wholesale-page"><section className="wholesale-hero"><div><p className="eyebrow">Wholesale partnerships</p><h1>Let’s share something good.</h1><p className="page-intro">Bring Crunchify’s fruit and vegetable snacks to your customers. We welcome inquiries from distributors, resellers and retailers.</p><Link className="button button-primary" href="/inquire">Become a Wholesale Partner</Link></div><div className="wholesale-photo"><Image src="/brand/banana-pack.webp" alt="Crunchify Banana Crunch package with banana snacks" width={900} height={900} priority /></div></section><section className="wholesale-benefits" aria-labelledby="wholesale-benefits-heading"><p className="eyebrow">Why stock Crunchify?</p><h2 id="wholesale-benefits-heading">Good food, made simple.</h2><div className="benefit-grid"><article><h3>Simple ingredients</h3><p>Each snack starts with a fruit or vegetable and coconut oil.</p></article><article><h3>No artificial sweeteners</h3><p>Flavor without artificial sweeteners.</p></article><article><h3>A range to enjoy</h3><p>Banana, jackfruit, apple and broccoli offer a variety of flavors.</p></article></div></section><section className="wholesale-cta"><div><h2>Start with a conversation.</h2><p>Tell us where you operate, which products interest you and your estimated monthly volume.</p></div><Link className="button button-primary" href="/inquire">Send a wholesale inquiry</Link></section></main>; }
+import { StockBenefits } from "@/components/stock-benefits";
+import { WholesaleCallout } from "@/components/wholesale-callout";
+export const metadata = {
+  title: "Wholesale",
+  description:
+    "Bring Crunchify fruit and vegetable snacks to your customers. Start a wholesale conversation as a distributor, reseller or retailer.",
+};
+export default function Wholesale() {
+  return (
+    <main>
+      <section className="shell page-section wholesale-hero">
+        <div>
+          <p className="section-kicker">For wholesale partners</p>
+          <h1>
+            Good things
+            <br />
+            belong together.
+          </h1>
+          <p className="page-intro">
+            Bring Crunchify’s fruit and vegetable snacks to your customers. We
+            welcome inquiries from distributors, resellers and retailers.
+          </p>
+          <Link className="button button-primary" href="/inquire">
+            Become a Wholesale Partner
+          </Link>
+        </div>
+        <div className="wholesale-photo">
+          <Image
+            src="/brand/banana-pack.webp"
+            alt="Crunchify Banana Crunch package with banana snacks"
+            width={900}
+            height={1118}
+            loading="eager"
+            sizes="(max-width: 760px) 90vw, 45vw"
+          />
+        </div>
+      </section>
+      <StockBenefits />
+      <section className="shell wholesale-preparation">
+        <h2>
+          A good conversation
+          <br />
+          starts here.
+        </h2>
+        <div>
+          <p>
+            Tell us a little about your business, where you operate and the
+            products that interest you.
+          </p>
+          <p>
+            Have an estimated monthly volume in mind? Include it in your inquiry
+            so we can understand what you’re looking for.
+          </p>
+          <Link className="text-link" href="/products">
+            Explore all four products
+          </Link>
+        </div>
+      </section>
+      <WholesaleCallout />
+    </main>
+  );
+}

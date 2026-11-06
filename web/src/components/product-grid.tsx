@@ -1,9 +1,67 @@
 import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/features/products/data";
-export function ProductGrid({ category, headingLevel = 3 }: { category?: string; headingLevel?: 2 | 3 }) {
-  return <div className="product-grid">{products.filter(p => !category || category === "All" || p.category === category).map(p => <article className="product-card" key={p.slug}>
-    <Link href={`/products/${p.slug}`} className="product-photo"><Image src={p.image} alt={p.name} width={800} height={800} sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 700px) 560px, (max-width: 1368px) calc((100vw - 126px) / 4), 311px" /></Link>
-    {headingLevel === 2 ? <h2>{p.name}</h2> : <h3>{p.name}</h3>}<p>{p.category} snack</p><Link className="product-link" href={`/products/${p.slug}`}>View product</Link>
-  </article>)}</div>;
+import { OpenIcon } from "./icons";
+
+export function ProductGrid({
+  category,
+  headingLevel = 3,
+  excludeSlug,
+}: {
+  category?: string;
+  headingLevel?: 2 | 3;
+  excludeSlug?: string;
+}) {
+  const visible = products.filter(
+    (p) =>
+      (!category || category === "All" || p.category === category) &&
+      p.slug !== excludeSlug,
+  );
+  return (
+    <div
+      className={`product-grid${excludeSlug ? " product-grid-related" : ""}`}
+    >
+      {visible.map((p) => (
+        <article className={`product-card tone-${p.tone}`} key={p.slug}>
+          <Link href={`/products/${p.slug}`} className="product-photo">
+            <Image
+              src={p.image}
+              alt={`${p.name} package and snack`}
+              width={800}
+              height={994}
+              sizes={
+                excludeSlug
+                  ? "(max-width: 600px) 90vw, 30vw"
+                  : "(max-width: 600px) 90vw, (max-width: 1440px) 46vw, 630px"
+              }
+            />
+            <span className="product-photo-action">
+              <OpenIcon />
+            </span>
+          </Link>
+          <div className="product-card-copy">
+            <div>
+              <p className="product-category">{p.category} snack</p>
+              {headingLevel === 2 ? (
+                <h2>
+                  <Link href={`/products/${p.slug}`}>{p.name}</Link>
+                </h2>
+              ) : (
+                <h3>
+                  <Link href={`/products/${p.slug}`}>{p.name}</Link>
+                </h3>
+              )}
+            </div>
+            <Link
+              className="product-link"
+            aria-label={`View product: ${p.name}`}
+              href={`/products/${p.slug}`}
+            >
+              View product
+            </Link>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
 }
