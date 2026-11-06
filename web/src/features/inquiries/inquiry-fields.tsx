@@ -213,7 +213,7 @@ export function InquiryFields({
           rows={5}
           placeholder={
             wholesale
-              ? "Anything else you’d like us to know?"
+              ? "Tell us about what you’re looking for."
               : "Tell us about the collaboration you have in mind."
           }
           aria-invalid={errors.message ? true : undefined}

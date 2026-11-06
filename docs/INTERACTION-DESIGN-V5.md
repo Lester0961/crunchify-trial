@@ -1,6 +1,6 @@
 # Crunchify — secondary pages and motion plan
 
-Prepared 6 November 2026. Status: researched proposal and interactive concepts. The production application remains on the released V4 interface. This document supersedes V4 only for the proposed secondary-page layouts and interaction behavior; the landing-page identity and source-backed content remain the baseline.
+Prepared 6 November 2026. Status: implemented and tested in the actual application and isolated Preview. Production release evidence is recorded in `PRODUCTION-RELEASE.md`. This document describes the V5 secondary-page layouts and interaction behavior; the landing-page identity and source-backed content remain the baseline. The research and concept review below are retained as design history.
 
 ## Decision
 
@@ -250,3 +250,21 @@ Use isolated/sample Preview records and the already authorized temporary test em
 - Corrected three concept issues during review: local form-button handling in the preview frame, menu focus after rerender, and the staff logo's available space. The original logo artwork was preserved.
 - No console errors were reported in the checked concept session. Actual application regressions, performance measurements and physical-device/screen-reader checks remain the implementation gates above.
 - The production site, database, email settings, repository history and deployment were not changed by this planning pass. Only the new plan and ignored local concept/review artifacts were created.
+
+## Application implementation and review — 6 November 2026
+
+V5 is now working application code. It includes the moving collection indicator and card continuity, all four pack/crunch galleries, keyboard and touch controls, image recovery, grouped forms, a nine-detail completion cue, validation focus, retained retries, a persistent reduced-motion control, preparation disclosures, privacy anchors, recovery pages, and the restrained staff workspace. The liked home composition remains; its existing product story now uses bounded, damped motion and stops updating when idle or offscreen.
+
+Staff login, filtering and saves now show actual waiting and error states. Follow-up drafts survive reload in the same tab. A save confirms the returned record before acknowledging success, refreshes the header/history, and retains the filtered inbox link. Native staff forms remain usable. No animation dependency, product claim, commercial promise, customer account or shop was added.
+
+Verified against the application, rather than the concept:
+
+- 154 public layout checks across all 12 route families, the 12 specified widths, and two short landscape sizes; 18 additional staff inbox/detail layouts. No horizontal overflow in these checks.
+- Eight public interaction groups and three motion groups, including all four galleries and scroll chapters, emulated touch swipe, exact quote selection, navigation, form validation/error/retry/success, optional partner collaboration type and reduced motion.
+- Eight staff interaction groups against 52 disposable Preview records: real login, pagination/search/combined filters, draft reload, retained failed save, real save/history refresh, filtered Back, email retry states, native save and sign-out.
+- Thirteen WCAG A/AA axe states with no reported violations. These are automated checks, not a screen-reader certification.
+- Both public forms submitted through actual buttons against Preview. The database saved the records, and Brevo accepted both confirmation and team-notification requests for each. Inbox delivery was not independently rechecked in this pass. Failure/uncertainty UI tests used controlled responses so they did not send additional messages.
+- All 16 existing integration checks, lint and the production build passed. Application screenshots and review JSON are in the ignored `concepts/v5-live` directory; the original concepts remain separate.
+- Lighthouse 13.6.0, production build on localhost, default simulated mobile: product performance 89/92/93 (median 92), LCP 3.1–3.3 seconds, total blocking time 80–210 ms, CLS 0.002; accessibility and best practices 100. The trial intentionally retains `noindex`, which lowers the SEO score. These are lab results; field and physical-device results are unavailable.
+
+Physical phone keyboards, hardware-specific performance, a complete manual screen-reader pass and real-user field metrics remain outside the available browser evidence. The VPS remains excluded as requested.
