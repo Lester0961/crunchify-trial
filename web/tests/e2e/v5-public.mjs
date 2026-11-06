@@ -468,7 +468,12 @@ try {
   }
   assert.deepEqual(errors, [], "Browser runtime errors");
   await writeFile(
-    path.join(output, "public-review.json"),
+    path.join(
+      output,
+      process.env.SKIP_LAYOUTS
+        ? "public-release-interactions.json"
+        : "public-review.json",
+    ),
     JSON.stringify(report, null, 2),
   );
   console.log(

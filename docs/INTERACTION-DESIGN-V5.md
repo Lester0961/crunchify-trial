@@ -240,7 +240,7 @@ Use isolated/sample Preview records and the already authorized temporary test em
 - A clickable concept covers home reference, collection, reusable four-product detail, wholesale, both inquiry types, staff login/inbox/detail, privacy and not-found, with desktop/portrait/landscape presentation controls.
 - The concept uses the actual logo, four original pack photographs, Banana crumb photograph and supplied Poppins font files. Gallery motion is demonstrated with Banana. Forms and staff records are local simulations and explicitly sample data; no emails, credentials or live customer records are included.
 - Screenshots are orientation-specific concept references, not screenshots of V5 deployed production. New files use the `V5` prefix in the existing Crunchify Drive folder, preserving earlier versions.
-- The final verification results for these concepts are recorded in `concepts/v5/review-results.json` and the review index. Actual application implementation, production regression testing and release remain subsequent work.
+- The verification results for these concepts are recorded in `concepts/v5/review-results.json` and the concept review index. These results describe the earlier concept pass; application implementation and release evidence follow below.
 
 ## Concept review results — 6 November 2026
 
@@ -248,7 +248,7 @@ Use isolated/sample Preview records and the already authorized temporary test em
 - Exercised the actual concept controls in Chrome: category selection, pack/crunch image change, product-specific inquiry preselection, menu open/Escape/focus recovery, motion off, form sending/disabled fields, retained connection error, retry, saved confirmation, email pending, staff filtering/clearing, exact record opening, status/note save, sample email retry, and sample staff sign-in/show-password.
 - All captured page layouts reported no horizontal overflow at their reviewed container width. Additional checks covered very narrow containers and an actual 844 × 390 browser viewport. This is browser evidence, not a physical-device claim.
 - Corrected three concept issues during review: local form-button handling in the preview frame, menu focus after rerender, and the staff logo's available space. The original logo artwork was preserved.
-- No console errors were reported in the checked concept session. Actual application regressions, performance measurements and physical-device/screen-reader checks remain the implementation gates above.
+- No console errors were reported in the checked concept session. This was concept evidence only; application checks and their limits are recorded below.
 - The production site, database, email settings, repository history and deployment were not changed by this planning pass. Only the new plan and ignored local concept/review artifacts were created.
 
 ## Application implementation and review — 6 November 2026
@@ -268,3 +268,5 @@ Verified against the application, rather than the concept:
 - Lighthouse 13.6.0, production build on localhost, default simulated mobile: product performance 89/92/93 (median 92), LCP 3.1–3.3 seconds, total blocking time 80–210 ms, CLS 0.002; accessibility and best practices 100. The trial intentionally retains `noindex`, which lowers the SEO score. These are lab results; field and physical-device results are unavailable.
 
 Physical phone keyboards, hardware-specific performance, a complete manual screen-reader pass and real-user field metrics remain outside the available browser evidence. The VPS remains excluded as requested.
+
+V5 is released at https://crunchify.vercel.app/ from application commit `39b2c4f`. The live public interaction and motion checks, public accessibility checks, and real staff sign-in/sign-out passed after promotion. All 54 owned Preview test inquiries were removed after verification. The 41 application screenshots are saved in the existing user Drive folder; deployment and rollback details are in `PRODUCTION-RELEASE.md`.
