@@ -8,7 +8,7 @@
 - PostgreSQL: dedicated Supabase project `crunchify-trial` in the School organization. Production and new previews share one database but use separate schemas and credentials: production uses the restricted `crunchify_production_app` role and `crunchify_private`, while new previews use the restricted `crunchify_preview_app` role and `crunchify_preview`. The preview role lacks production schema usage and table access. Earlier preview deployments may retain the former production credential; retire their access by rotating production credentials after a verified cutover.
 - Staff sign-in: `/admin/login`. The locally generated credentials are in the ignored `web/.env.admin-credentials` file on the development machine. Transfer credentials securely to the authorized owner and rotate them for handover. Do not email or commit the file.
 
-The default Git branch is `codex/crunchify-trial`. A Vercel ignored-build command currently prevents Git pushes to the production target from publishing automatically; production releases have been made explicitly after checks. Review branch and release policy with the company before handover. The public site currently returns `noindex` until content and launch approval.
+The default Git branch is `main`. A Vercel ignored-build command currently prevents Git pushes to the production target from publishing automatically; production releases have been made explicitly after checks. Review branch and release policy with the company before handover. The public site currently returns `noindex` until content and launch approval.
 
 ## Inquiry handling
 
