@@ -162,7 +162,7 @@ export function InquiryForm({
 
   return (
     <form
-      className="inquiry-form"
+      className="inquiry-form flex min-w-0 flex-col gap-6"
       method="post"
       action="/api/inquiries"
       ref={formRef}

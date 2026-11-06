@@ -19,7 +19,7 @@ export function ProductGrid({
   );
   return (
     <div
-      className={`product-grid${excludeSlug ? " product-grid-related" : ""}`}
+      className={`product-grid grid${excludeSlug ? " product-grid-related" : ""}`}
     >
       {visible.map((p) => (
         <article

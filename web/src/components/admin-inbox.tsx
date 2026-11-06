@@ -73,7 +73,7 @@ export function AdminInbox({
     `/admin/inquiries/${id}${query.size ? "?returnTo=" + encodeURIComponent(returnTo) : ""}`;
   return (
     <main className="admin-page">
-      <header className="admin-heading">
+      <header className="admin-heading flex items-center justify-between gap-6">
         <div>
           <p className="section-kicker">Partner workspace</p>
           <h1>Inquiries</h1>
@@ -81,7 +81,7 @@ export function AdminInbox({
         </div>
         <span className="staff-label">Staff access</span>
       </header>
-      <dl className="admin-summary">
+      <dl className="admin-summary grid">
         <div>
           <dt>New inquiries</dt>
           <dd>{totals.new}</dd>

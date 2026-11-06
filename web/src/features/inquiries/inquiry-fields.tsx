@@ -63,7 +63,7 @@ export function InquiryFields({
         <legend>
           {wholesale ? "Your business" : "Tell us about yourself."}
         </legend>
-        <div className="form-grid">
+        <div className="form-grid grid">
           <InputField
             name="company"
             label={wholesale ? "Company name" : "Organization (required)"}
@@ -147,7 +147,7 @@ export function InquiryFields({
         <>
           <fieldset className="inquiry-group">
             <legend>Your contact</legend>
-            <div className="form-grid">
+            <div className="form-grid grid">
               <InputField
                 name="contact"
                 label="Contact person"

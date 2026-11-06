@@ -133,7 +133,7 @@ export function FollowupForm({
 
   return (
     <form
-      className="inquiry-form followup-form"
+      className="inquiry-form followup-form flex min-w-0 flex-col gap-6"
       action={action}
       method="post"
       onSubmit={save}

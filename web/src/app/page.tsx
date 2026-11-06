@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <main>
       <section className="hero">
-        <div className="shell hero-grid">
+        <div className="shell hero-grid grid items-center">
           <div className="hero-copy">
             <p className="section-kicker">Fruit & vegetable snacks</p>
             <h1>

@@ -29,7 +29,7 @@ export function InboxFilters({
   }
   return (
     <form
-      className="admin-filters"
+      className="admin-filters grid"
       action="/admin"
       onSubmit={apply}
       aria-busy={pending}

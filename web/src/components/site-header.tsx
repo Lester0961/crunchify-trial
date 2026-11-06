@@ -51,9 +51,12 @@ export function SiteHeader() {
   }, [open]);
   return (
     <header className="site-header" ref={headerRef}>
-      <div className="shell header-inner">
+      <div className="shell header-inner flex items-center gap-8">
         <BrandLogo />
-        <nav className="desktop-nav" aria-label="Main navigation">
+        <nav
+          className="desktop-nav mx-auto flex gap-8"
+          aria-label="Main navigation"
+        >
           {navigation.map((item) => (
             <Link
               key={item.href}

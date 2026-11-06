@@ -26,8 +26,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
   }
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
     return (
-      <div className="staff-shell">
-        <aside className="staff-sidebar">
+      <div className="staff-shell grid">
+        <aside className="staff-sidebar flex flex-col">
           <div>
             <div className="staff-brand-mark">
               <BrandLogo href="/admin" label="Admin inquiries" />

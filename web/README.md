@@ -1,6 +1,6 @@
 # Crunchify wholesale website
 
-Next.js App Router, TypeScript and Tailwind application. The trial is publicly available at https://crunchify.vercel.app/ with staff sign-in at `/admin/login`. Current verification and outstanding company inputs are recorded in `../docs/REMAINING-WORK-CHECKLIST.md`; the historical plan is in `../docs/CRUNCHIFY-MASTER-PLAN.md`.
+Next.js App Router, TypeScript and Tailwind application. Tailwind theme tokens, markup utilities and reusable `@apply` styles drive the public and staff interface; custom CSS handles image framing and motion. See `../docs/TAILWIND-CONVERSION.md` for the implementation and visual comparison. The trial is publicly available at https://crunchify.vercel.app/ with staff sign-in at `/admin/login`. Current verification and outstanding company inputs are recorded in `../docs/REMAINING-WORK-CHECKLIST.md`; the historical plan is in `../docs/CRUNCHIFY-MASTER-PLAN.md`.
 
 ## Local development
 

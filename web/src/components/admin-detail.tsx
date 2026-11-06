@@ -74,7 +74,7 @@ export function AdminDetail({
       <Link className="text-link admin-back" href={backHref}>
         Back to inquiries
       </Link>
-      <header className="admin-heading admin-detail-heading">
+      <header className="admin-heading admin-detail-heading flex items-center justify-between gap-6">
         <div>
           <div className="inquiry-meta">
             <span>{kindLabel(kind)}</span>
@@ -92,7 +92,7 @@ export function AdminDetail({
             : "Email retry completed. Review the email statuses below."}
         </p>
       )}
-      <div className="admin-detail-layout">
+      <div className="admin-detail-layout grid">
         <div>
           <section
             className="admin-detail-card"

@@ -54,7 +54,7 @@ export function LoginForm({
   }
   return (
     <form
-      className="inquiry-form login-form"
+      className="inquiry-form login-form flex min-w-0 flex-col gap-6"
       action="/api/admin/login"
       method="post"
       onSubmit={signIn}

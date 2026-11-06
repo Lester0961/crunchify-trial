@@ -24,7 +24,9 @@ const username = credentials.match(/^Username:\s*(.+)$/m)?.[1].trim();
 const password = credentials.match(/^Password:\s*(.+)$/m)?.[1].trim();
 if (!username || !password)
   throw new Error("Local test credentials are missing.");
-const output = path.resolve("../concepts/v5-live");
+const output = path.resolve(
+  process.env.TEST_ARTIFACT_DIR || "../concepts/v5-live",
+);
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
   executablePath:

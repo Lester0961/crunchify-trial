@@ -6,7 +6,9 @@ import path from "node:path";
 
 const require = createRequire(import.meta.url);
 const base = process.env.TEST_BASE_URL || "http://127.0.0.1:3010";
-const output = path.resolve("../concepts/v5-live");
+const output = path.resolve(
+  process.env.TEST_ARTIFACT_DIR || "../concepts/v5-live",
+);
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
   executablePath:
@@ -448,7 +450,7 @@ try {
     }),
   );
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.getByRole("alert").waitFor();
+  await page.locator(".login-form").getByRole("alert").waitFor();
   assert.equal(
     await page.locator('[name="username"]').inputValue(),
     "test-user",

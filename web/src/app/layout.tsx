@@ -13,7 +13,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="m-0 bg-milk font-sans text-[16px] leading-[1.65] text-ink">
         <MotionPreferenceSync />
         <a href="#main-content" className="skip-link">
           Skip to content

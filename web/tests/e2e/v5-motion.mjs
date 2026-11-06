@@ -4,7 +4,9 @@ import path from "node:path";
 import { writeFile } from "node:fs/promises";
 
 const base = process.env.TEST_BASE_URL || "http://127.0.0.1:3010";
-const output = path.resolve("../concepts/v5-live");
+const output = path.resolve(
+  process.env.TEST_ARTIFACT_DIR || "../concepts/v5-live",
+);
 const browser = await chromium.launch({
   executablePath:
     process.env.CHROME_PATH ||
