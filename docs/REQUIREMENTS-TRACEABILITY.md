@@ -1,6 +1,6 @@
 # Crunchify trial: requirement and evidence tracker
 
-Updated 5 November 2026. Sources: A = trial agreement; D = B2B dossier; B = Drive brand book; U = user's instructions; P = proposed design; E = verification evidence. A checked implementation does not itself establish company acceptance.
+Updated 6 November 2026. Sources: A = trial agreement; D = B2B dossier; B = Drive brand book; U = user's instructions; P = proposed design; E = verification evidence. A checked implementation does not itself establish company acceptance.
 
 ## Core
 
@@ -30,6 +30,7 @@ Updated 5 November 2026. Sources: A = trial agreement; D = B2B dossier; B = Driv
 
 ## Recent verification and limits
 
+- [x] A/E: Tailwind now actively styles the public and staff interface through compiled theme tokens, direct markup utilities and reusable `@apply` component styles. The conversion was released to production on 6 November. All 85 before/after layout comparisons matched and four sampled screenshots were pixel-identical. Public, motion, accessibility and staff regression checks passed; details are in `TAILWIND-CONVERSION.md` and `PRODUCTION-RELEASE.md`.
 - [x] E: On 5 November, synthetic preview and production inquiries each saved and delivered both messages to the user's temporary inbox. A later failed attempt cannot overwrite an accepted provider status; isolated tests covered concurrent updates. The approved company sender and recipient are still needed.
 - [x] E: Mobile and desktop keyboard automation covered both forms, the mobile menu and staff sign-in/update/sign-out. An axe audit found no violations for selected WCAG A/AA rules in eight preview error and pagination states. This does not replace a real screen-reader check or physical-device testing.
 - [x] E: A live encrypted backup was created and its five table entries listed. A separate synthetic backup including history and sessions was restored and its history trigger checked. A live-data restore rehearsal, off-device backup, retention and monitoring remain open.

@@ -4,7 +4,7 @@ Release source: `Frontend`. GitHub's default branch remains `main`.
 
 Public address: https://crunchify.vercel.app/
 
-The current release is V5, documented in `INTERACTION-DESIGN-V5.md`. It preserves the supplied logo, photographs, Poppins and the liked landing-page direction, and adds the working galleries, smoother motion, grouped forms and staff feedback. V4 evidence is retained below as history.
+The current release uses Tailwind throughout the V5 interface, documented in `TAILWIND-CONVERSION.md` and `INTERACTION-DESIGN-V5.md`. It preserves the supplied logo, photographs, Poppins, approved layouts and interactions. V4 and V5 evidence is retained below as history.
 
 ## Release procedure
 
@@ -17,7 +17,7 @@ The production ignored-build rule stays `if [ "$VERCEL_ENV" = "production" ]; th
 
 ## Rollback reference
 
-Before V5, `crunchify.vercel.app` pointed to V4 deployment `dpl_HJCKpPvArAdRPw5fbLkUgDBSKxJa` (`crunchify-trial-rbkh2z6l8-lesters-projects-17d9e437.vercel.app`). Preserve this deployment. If V5 has a blocking problem, roll production traffic back to that deployment through Vercel and verify the public domain again.
+Before the Tailwind release, `crunchify.vercel.app` pointed to V5 deployment `dpl_62ERt6gZj9FrenvicjxiS1qfhvrT` (`crunchify-trial-n5zjz9fac-lesters-projects-17d9e437.vercel.app`). Preserve this deployment. If the Tailwind release has a blocking problem, roll production traffic back to that deployment through Vercel and verify the public domain again. The older V4 deployment remains part of the release history below.
 
 No database migration is required. Staff changes and real form/email checks were isolated to Preview. Production verification used simulated public-form responses and real staff sign-in/sign-out without changing customer records.
 
@@ -47,3 +47,15 @@ No database migration is required. Staff changes and real form/email checks were
 - The post-release production error/fatal log scan returned no entries in the 15-minute window. The Drains listing endpoint returned 404, so drain configuration was not verified; no new monitoring service was configured. GitHub reported no workflow runs for `Frontend`; the reported test results are the completed local and browser checks.
 - Forty-one actual application screenshots were uploaded into the existing user Drive folder and individually verified by metadata readback. The earlier concepts remain available separately. The updated plan and release package accompany these screenshots.
 - V4 deployment `dpl_HJCKpPvArAdRPw5fbLkUgDBSKxJa` remains the rollback point. The VPS remains excluded as requested.
+
+## Tailwind release result — 6 November 2026
+
+- Released application commit `9b16a62ccee8ec848e5f345dc87dd5806cce9e64` from `Frontend`, with the casual message "Put Tailwind to work". Tailwind now actively supplies the shared theme, direct markup utilities and reusable component styling across public and staff pages.
+- Built with Production environment values as `dpl_GeqmtcH9F6QJpDWaQU3mLHYkU4m3`, immutable hostname `crunchify-trial-5s3b0bq83-lesters-projects-17d9e437.vercel.app`. Build state was `READY` in about 16 seconds. Three protected candidate routes returned HTTP 200 with the new markup before promotion.
+- Promoted that exact candidate and verified the project production target and live compiled Tailwind CSS. Automatic domain assignment, the original ignored-build rule, the `web` root directory and Production Git tracking of `main` remain in place.
+- All 85 before/after layout comparisons matched: 60 public and 25 hosted staff states across phone, tablet, desktop and short landscape viewports. Four sampled public/staff screenshots were pixel-identical. This conversion preserves V5's approved appearance.
+- Build, lint and 16 integration checks passed. Browser review passed on 154 public layouts, 18 staff layouts, eight public interaction groups, three motion groups, eight staff interaction groups and 13 selected axe A/AA states. Hosted staff workflows exercised actual sign-in, saves, history, retained drafts, filters, pagination, native-form fallback and sign-out.
+- All 52 owned synthetic Preview inquiries and related history were removed; readback confirmed zero remaining Preview inquiries. Production customer records were not edited.
+- Post-promotion checks passed again for all eight public interaction groups, three motion groups, nine public axe states and the critical-route smoke suite, including real staff sign-in/sign-out at mobile and desktop widths. The in-app browser visibly confirmed photo switching and product-specific quote selection. Public submission responses were simulated and sent no new inquiries or emails.
+- The deployment-scoped error/fatal log scan returned no entries in its 15-minute window. No new Lighthouse or physical-device measurements were taken for this styling conversion; the V5 lab measurements above remain historical evidence.
+- Rollback point: V5 deployment `dpl_62ERt6gZj9FrenvicjxiS1qfhvrT`. No database migration was required. Font-file limitations, temporary email routing and the excluded VPS remain separate from Tailwind compliance.
