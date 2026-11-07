@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { deliverBrevo } from "../../src/server/email/brevo.ts";
 
-const input = { apiKey: "test-key", from: "sender@example.invalid", to: "recipient@example.invalid", subject: "Test", text: "Test message", key: "inquiry/sender" };
+const input = { apiKey: "test-key", from: "sender@example.invalid", to: "recipient@example.invalid", subject: "Test", text: "Test message", html: "<p>Test message</p>", key: "inquiry/sender" };
 
 test("sends a provider request with the intended sender and recipient and a stable idempotency key", async () => {
   const calls = [];
@@ -14,6 +14,8 @@ test("sends a provider request with the intended sender and recipient and a stab
   assert.equal(calls[0].url, "https://api.brevo.com/v3/smtp/email");
   assert.equal(first.sender.email, input.from);
   assert.equal(first.to[0].email, input.to);
+  assert.equal(first.htmlContent, input.html);
+  assert.equal(first.textContent, input.text);
   assert.equal(first.headers.idempotencyKey, second.headers.idempotencyKey);
   assert.notEqual(first.headers.idempotencyKey, "");
 });
