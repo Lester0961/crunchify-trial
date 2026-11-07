@@ -1,8 +1,8 @@
 # Crunchify B2B trial: five-day delivery plan
 
-**Superseded planning summary:** the complete, current re-plan is in [CRUNCHIFY-MASTER-PLAN.md](CRUNCHIFY-MASTER-PLAN.md), with a requirement-by-requirement tracker in [REQUIREMENTS-TRACEABILITY.md](REQUIREMENTS-TRACEABILITY.md). The notes below are retained as the earlier planning baseline and may omit later findings.
+**Superseded planning summary:** the complete, current re-plan is in [CRUNCHIFY-MASTER-PLAN.md](CRUNCHIFY-MASTER-PLAN.md), with a requirement-by-requirement tracker in [REQUIREMENTS-TRACEABILITY.md](../REQUIREMENTS-TRACEABILITY.md). The notes below are retained as the earlier planning baseline and may omit later findings.
 
-Status: planning and local setup. Wireframes are concepts, not a functioning site. The agreement's 10-working-day period is unchanged; five days is Lester's desired internal target, subject to access and feedback. The latest written acceptance criteria, exact start date and bonus allocation should be confirmed with Mathew. No claim of bonus entitlement is implied.
+These notes record the planning and local setup stage. The five-day internal target sat within the agreement’s ten-working-day period. See the [trial status](../REQUIREMENTS-TRACEABILITY.md) for the current deliverables.
 
 ## Source of truth and decisions
 

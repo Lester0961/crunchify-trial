@@ -24,20 +24,45 @@ o/bKiIz+Fq8=
 -----END CERTIFICATE-----
 `;
 
-/** Vercel environments must not fall back to a different credential. */
-export function selectDatabaseUrl(env: { VERCEL_ENV?: string; DATABASE_URL?: string; PREVIEW_DATABASE_URL?: string; PRODUCTION_DATABASE_URL?: string }) {
-  const value = env.VERCEL_ENV === "preview" ? env.PREVIEW_DATABASE_URL : env.VERCEL_ENV === "production" ? env.PRODUCTION_DATABASE_URL : env.DATABASE_URL;
-  if (!value) throw new Error(env.VERCEL_ENV === "preview" ? "Preview database is not configured" : env.VERCEL_ENV === "production" ? "Production database is not configured" : "Database is not configured");
+/** Use the database credential assigned to the current environment. */
+export function selectDatabaseUrl(env: {
+  VERCEL_ENV?: string;
+  DATABASE_URL?: string;
+  PREVIEW_DATABASE_URL?: string;
+  PRODUCTION_DATABASE_URL?: string;
+}) {
+  const value =
+    env.VERCEL_ENV === "preview"
+      ? env.PREVIEW_DATABASE_URL
+      : env.VERCEL_ENV === "production"
+        ? env.PRODUCTION_DATABASE_URL
+        : env.DATABASE_URL;
+  if (!value) {
+    throw new Error(
+      env.VERCEL_ENV === "preview"
+        ? "Preview database is not configured"
+        : env.VERCEL_ENV === "production"
+          ? "Production database is not configured"
+          : "Database is not configured",
+    );
+  }
   return value;
 }
 
 /** Supabase's pooler uses its own CA; preserve hostname and certificate checks. */
 export function prepareVerifiedConnection(value: string) {
   const url = new URL(value);
-  if (["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) return { connectionString: value };
-  if (url.searchParams.get("sslmode") !== "verify-full") throw new Error("Database requires verified TLS");
+  if (["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) {
+    return { connectionString: value };
+  }
+  if (url.searchParams.get("sslmode") !== "verify-full") {
+    throw new Error("Database requires verified TLS");
+  }
   // pg parses sslmode from connectionString after other options and would
   // otherwise overwrite the explicit CA with an empty SSL configuration.
   url.searchParams.delete("sslmode");
-  return { connectionString: url.toString(), ssl: { ca: supabaseCa, rejectUnauthorized: true } };
+  return {
+    connectionString: url.toString(),
+    ssl: { ca: supabaseCa, rejectUnauthorized: true },
+  };
 }

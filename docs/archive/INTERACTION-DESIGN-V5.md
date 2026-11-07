@@ -4,7 +4,7 @@ Prepared 6 November 2026. Status: implemented and tested in the actual applicati
 
 ## Decision
 
-Keep the landing page that Lester likes. Extend its original photography, Poppins, warm surfaces and clear wholesale focus across the other pages. Make the site feel more responsive through continuity: an image changes gently in the same frame, a selected filter moves visibly, a form explains its progress, and an admin save confirms the actual result without losing context.
+Extend the landing page’s product photography, Poppins typography, warm palette, and wholesale focus to the other pages. Keep image changes in the same frame, show the selected filter, explain form progress, and confirm staff saves without leaving the inquiry.
 
 Use two visual motifs: generously framed product photography and quiet, rounded controls. Depth belongs to the product media, with small rotations and soft changes of scale. Information, navigation and forms remain stable. There is no new shop, cart, customer account, subscription, invented specification or additional product.
 
@@ -253,7 +253,7 @@ Use isolated/sample Preview records and the already authorized temporary test em
 
 ## Application implementation and review — 6 November 2026
 
-V5 is now working application code. It includes the moving collection indicator and card continuity, all four pack/crunch galleries, keyboard and touch controls, image recovery, grouped forms, a nine-detail completion cue, validation focus, retained retries, a persistent reduced-motion control, preparation disclosures, privacy anchors, recovery pages, and the restrained staff workspace. The liked home composition remains; its existing product story now uses bounded, damped motion and stops updating when idle or offscreen.
+V5 added the collection indicator, four product galleries with keyboard and touch controls, grouped forms, validation focus, retained input on retry, and a saved reduced-motion preference. The homepage product story stops updating when idle or offscreen. Staff saves confirm the result and keep the current inquiry open.
 
 Staff login, filtering and saves now show actual waiting and error states. Follow-up drafts survive reload in the same tab. A save confirms the returned record before acknowledging success, refreshes the header/history, and retains the filtered inbox link. Native staff forms remain usable. No animation dependency, product claim, commercial promise, customer account or shop was added.
 

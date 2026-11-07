@@ -60,7 +60,7 @@
 - [x] The queued Docker smoke run subsequently passed at commit `e5d7268`: https://github.com/Lester0961/crunchify-trial/actions/runs/41877632965. The later responsive-image change was verified on preview and production, but was not included in that container run.
 - [ ] Confirm Vercel, GitHub, Supabase, Brevo, domain, DNS, backup and billing ownership with the company. Keep the repository private and provide access through an agreed handover.
 - [ ] Decide the production branch and release process. Automatic production Git builds are currently guarded; production deployments have been promoted explicitly after checks.
-- [ ] Review [HANDOVER.md](HANDOVER.md), verify setup instructions from a clean checkout, and deliver the repository and review link to the company when ready.
+- [ ] Review [HANDOVER.md](../HANDOVER.md), verify setup instructions from a clean checkout, and deliver the repository and review link to the company when ready.
 - [x] On 5 November, a fresh checkout at `a21e5cc` passed `npm ci`, lint, build and all 14 integration tests using Node 24.22.2. The root README now reflects the configured trial; the new admin-credential generator was tested without changing the live credentials. Company handover and acceptance remain open.
 - [x] Used that clean checkout to generate disposable admin credentials and run the documented database setup against a new loopback-only PostgreSQL database. All five tables and four seed products were present; mobile and desktop browser sign-in/sign-out passed, and a synthetic local inquiry persisted with attribution and correctly reported disabled email. The disposable database and generated test credential files were removed. This did not test a fresh hosted deployment or company mail setup.
 - [ ] Receive Mathew's consolidated feedback, apply the agreed corrections, and obtain written acceptance of core deliverables and any bonus work.
@@ -84,7 +84,7 @@
 
 - [x] Deployed the supplied imagery and Poppins fallback to https://crunchify.vercel.app/. The protected preview and production deployments built successfully; production browser smoke checks passed, and the homepage image loaded at mobile width.
 - [x] The Next.js standalone server served the homepage and supplied image locally. A Docker build and isolated container smoke test subsequently passed; the complete VPS bonus remains unverified.
-- [x] A clean checkout passed npm ci, lint and build. A synthetic PostgreSQL backup restored four products and one test inquiry; see [BACKUP-RESTORE.md](BACKUP-RESTORE.md). Production backup and restoration remain open.
+- [x] A clean checkout passed npm ci, lint and build. A synthetic PostgreSQL backup restored four products and one test inquiry; see [BACKUP-RESTORE.md](../BACKUP-RESTORE.md). Production backup and restoration remain open.
 - [x] On 5 November, a fresh checkout at commit `a511f00` passed npm ci, lint, build and all 12 integration tests. This precedes the small mobile history-wrapping change, which passed its own build, lint and browser checks.
 - [ ] A separate free preview project was attempted, but Supabase reported the account has reached its active free-project limit. No other project was paused or changed.
 

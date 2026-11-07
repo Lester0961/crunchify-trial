@@ -1,6 +1,6 @@
 # VPS migration preparation
 
-This is a runbook for the optional bonus, not evidence of a completed migration. The user requested preparation for later; no company-approved VPS or cutover authorization has been provided.
+VPS migration is excluded from this trial. These notes record the steps for a future migration if the company requests one.
 
 ## Prerequisites
 

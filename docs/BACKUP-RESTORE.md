@@ -1,14 +1,10 @@
 # Database backup and restore
 
-The application stores inquiries in the `crunchify_private` PostgreSQL schema. Supabase Free does not include automatic database backups; manual or separately scheduled backups are required. Backups contain private contact information and must be encrypted, access-controlled, retained under the company’s policy and removed when that policy requires. Assign an owner to monitor backup success and perform restoration rehearsals. Do not place dumps, connection strings or passwords in Git or shared logs.
+The application stores inquiries in `crunchify_private`. On 5 November 2026, an encrypted live backup was created under `%LOCALAPPDATA%\Crunchify\Backups`. Its listing showed all five application tables. A separate synthetic archive was restored to a disposable database and checked for products, inquiries, history, and sessions. A restore rehearsal for the live archive remains pending.
 
-On 4 November 2026, the schema was backed up and restored using PostgreSQL 18 tools in an isolated local PostgreSQL instance with synthetic data. The restored database contained the expected four products and one synthetic inquiry. This was not a backup or restore of the live database and does not establish scheduled production backups.
+On the configured Windows account, run `node scripts/backup-production.mjs` from `web/` with PostgreSQL 18 client tools. The script uses a read-only database credential, verifies the server certificate, encrypts the archive, and checks that it can be listed. Its archive limit is 64 MiB.
 
-On 5 November 2026 Manila time, a live schema backup was encrypted on this Windows account at `%LOCALAPPDATA%\Crunchify\Backups`; its archive listing was verified. A separate synthetic encrypted archive restored successfully to a disposable local database (four products, one inquiry). The live archive has not been restored. The backup role can read the application tables but cannot insert, update, or delete inquiries. Its credential and the archive use Windows DPAPI for the current user: they may become inaccessible if this Windows profile or machine is lost. This is a manual local copy, not an off-device or scheduled backup. Agree a company-controlled encrypted destination, recovery credentials, retention, monitoring, and a restore rehearsal before relying on it.
-
-To create another local encrypted copy on this configured Windows account, run `node scripts/backup-production.mjs` from `web/` with PostgreSQL 18 client tools installed. The script uses the restricted credential, verifies the server certificate, encrypts the archive in memory, and verifies its listing. It fails if the archive exceeds 64 MiB. Do not commit the encrypted credential or archives; losing the Windows profile can make both unusable.
-
-After the history and session tables were added, a 5 November synthetic encrypted backup was restored to a disposable local database. The restore contained the four products, one synthetic inquiry, its history and a synthetic session; an inquiry update also produced a new history entry. A fresh live archive listed data for all five expected application tables, including history and sessions. The live archive itself has not been restored, and listing table entries does not verify row completeness.
+The local backup and its credential are protected by Windows DPAPI for the development account. Arrange company-controlled encrypted storage, retention, and recovery access before relying on backups for a permanent service.
 
 ## Backup
 

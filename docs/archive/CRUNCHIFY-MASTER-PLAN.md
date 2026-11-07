@@ -1,4 +1,4 @@
-> Historical planning baseline: see HANDOVER.md and REMAINING-WORK-CHECKLIST.md for current implementation and outstanding work.
+> Planning notes from 3 November 2026. See the [trial status](../REQUIREMENTS-TRACEABILITY.md) for the delivered site.
 
 # Crunchify B2B website: complete trial plan
 
@@ -134,9 +134,9 @@ Days are work blocks rather than calendar promises. Each gate needs a working re
 | Approved VPS, access, costs, mail, domain and migration criteria | Required to demonstrate the optional migration. | Not configured; Docker readiness alone is not migration. |
 | Timing of feedback and official start | Determines what can be completed within five days and the agreement's term. | An attachment described as signed was sent; its signature, payment, receipt and start date remain unverified. |
 
-## 10. Current status and source links
+## 10. Status on 3 November 2026 and source links
 
 - **Available:** local Next.js/TypeScript/Tailwind placeholder, project materials, a Dockerfile and a local PostgreSQL compose definition; 23 visual concept boards; and a separate local HTML/CSS homepage concept used to capture the corrected desktop and mobile designs. The homepage concept has been checked for horizontal overflow and its menu at representative widths, but its page links are not implemented application routes. An earlier scaffold lint/build passed, but neither result is evidence of a finished project.
 - **Not yet implemented or connected:** the actual branded site, inquiry API, database schema/migrations/seeds, transactional email, admin authentication/CRM, Vercel deployment, Git remote and actual VPS migration. Docker was not available when previously checked; its image has not been tested.
 - The source archive and prior design drafts are excluded from Git. For the working website, use only needed company-supplied assets in a private, company-controlled repository or approved storage, with appropriate handover. Never put secrets, real leads or the entire confidential reference archive into Git.
-- Detailed checklist: [`REQUIREMENTS-TRACEABILITY.md`](REQUIREMENTS-TRACEABILITY.md). Visual notes: [`VISUAL-DIRECTION-V3.md`](VISUAL-DIRECTION-V3.md). Local source files: `reference/email/[Dematera] Freelance Trial Agreement.pdf`, `reference/email/B2B Website Dossier.pdf`, and `reference/drive/Crunchify Brand Book Design.pdf`.
+- Detailed checklist: [`REQUIREMENTS-TRACEABILITY.md`](../REQUIREMENTS-TRACEABILITY.md). Visual notes: [`VISUAL-DIRECTION-V3.md`](VISUAL-DIRECTION-V3.md). Local source files: `reference/email/[Dematera] Freelance Trial Agreement.pdf`, `reference/email/B2B Website Dossier.pdf`, and `reference/drive/Crunchify Brand Book Design.pdf`.

@@ -1,9 +1,13 @@
 import { chromium } from "playwright-core";
 import assert from "node:assert/strict";
 
-const base = process.env.TEST_BASE_URL || "http://127.0.0.1:3124";
-const executablePath = process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe";
-const browser = await chromium.launch({ executablePath, headless: true });
+const base = process.env.TEST_BASE_URL || "http://127.0.0.1:3000";
+const browser = await chromium.launch({
+  ...(process.env.CHROME_PATH
+    ? { executablePath: process.env.CHROME_PATH }
+    : { channel: "chrome" }),
+  headless: true,
+});
 try {
   for (const width of [320, 390, 768, 1440]) {
     const page = await browser.newPage({ viewport: { width, height: 900 } });

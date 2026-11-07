@@ -1,24 +1,47 @@
 import assert from "node:assert/strict";
-import { createHash, createHmac, randomUUID } from "node:crypto";
+import { createHash, createHmac, randomBytes, randomUUID } from "node:crypto";
 import { chromium } from "playwright-core";
 import pg from "pg";
 import { updateDeliveryStatus } from "../../src/server/email/delivery-status.ts";
 
-// This test writes records and intentionally disables email. Refuse non-local targets.
-const base = new URL(process.env.TEST_BASE_URL || "http://localhost:3127");
-const databaseUrl = new URL(process.env.TEST_DATABASE_URL || "postgresql://crunchify_test@127.0.0.1:59255/source_test");
+// Run against a disposable local app and database with Brevo disabled.
+const {
+  TEST_BASE_URL,
+  TEST_DATABASE_URL,
+  ADMIN_TEST_USER,
+  ADMIN_TEST_PASSWORD,
+  ADMIN_SESSION_SECRET,
+} = process.env;
+assert.ok(TEST_BASE_URL && TEST_DATABASE_URL, "Set the local test app and database URLs");
+assert.ok(
+  ADMIN_TEST_USER && ADMIN_TEST_PASSWORD && ADMIN_SESSION_SECRET?.length >= 32,
+  "Set the local test staff login and session secret",
+);
+const base = new URL(TEST_BASE_URL);
+const databaseUrl = new URL(TEST_DATABASE_URL);
 const local = (hostname) => ["127.0.0.1", "localhost", "::1", "[::1]"].includes(hostname);
 assert.ok(local(base.hostname) && local(databaseUrl.hostname), "Recovery test requires an isolated local app and database");
 const schema = process.env.TEST_DATABASE_SCHEMA || "crunchify_private";
 assert.ok(["crunchify_private", "crunchify_preview"].includes(schema), "Unexpected test schema");
 const db = new pg.Client({ connectionString: databaseUrl.toString() });
-const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe" });
+const browser = await chromium.launch({
+  ...(process.env.CHROME_PATH
+    ? { executablePath: process.env.CHROME_PATH }
+    : { channel: "chrome" }),
+  headless: true,
+});
 const company = `Synthetic recovery ${randomUUID()}`;
 const partnerCompany = `Synthetic partner ${randomUUID()}`;
 const rateIp = `test-${randomUUID()}`;
 const rateKey = createHash("sha256").update(rateIp).digest("hex");
 const browserIp = `test-${randomUUID()}`;
 const browserKey = createHash("sha256").update(browserIp).digest("hex");
+const expiredValue = `${Date.now() - 1000}.${randomBytes(32).toString("hex")}`;
+const expiredSignature = createHmac("sha256", ADMIN_SESSION_SECRET)
+  .update(expiredValue)
+  .digest("hex");
+const expiredToken = `${expiredValue}.${expiredSignature}`;
+const expiredTokenHash = createHash("sha256").update(expiredToken).digest("hex");
 let id;
 try {
   await db.connect();
@@ -38,9 +61,9 @@ try {
   assert.equal(await page.locator('[name="company"]').getAttribute("aria-describedby"), "company-error");
   assert.equal(await page.locator('[name="contact"]').inputValue(), "Test person", "Other fields remain filled after validation");
   await page.locator('[name="company"]').fill(company);
-  await page.getByRole("button", { name: "Send inquiry" }).click();
+  await page.getByRole("button", { name: "Try again" }).click();
   await page.getByText("Your inquiry has been saved.").waitFor();
-  await page.getByText(/couldn’t send all email notifications/).waitFor();
+  await page.getByText(/Some email notifications are still pending/).waitFor();
   const saved = await db.query(`SELECT id, details, sender_email_status, company_email_status FROM ${schema}.inquiries WHERE details->>'company'=$1`, [company]);
   assert.equal(saved.rowCount, 1);
   ({ id } = saved.rows[0]);
@@ -70,17 +93,20 @@ try {
   assert.equal(await page.locator('[name="message"]').getAttribute("aria-describedby"), "message-error");
   assert.equal(await page.locator('[name="company"]').inputValue(), partnerCompany);
   await page.locator('[name="message"]').fill("Isolated partner test");
-  await page.getByRole("button", { name: "Send inquiry" }).click();
+  await page.getByRole("button", { name: "Try again" }).click();
   await page.getByText("Your inquiry has been saved.").waitFor();
   const partner = await db.query(`SELECT kind, details FROM ${schema}.inquiries WHERE details->>'company'=$1`, [partnerCompany]);
   assert.equal(partner.rowCount, 1);
   assert.equal(partner.rows[0].kind, "partner");
   assert.equal(partner.rows[0].details.businessType, "Media");
   assert.equal(partner.rows[0].details.utm.utm_source, "recovery-test");
-  const expired = String(Date.now() - 1000);
-  const signature = createHmac("sha256", "isolated-test-only-secret-0123456789abcdef").update(expired).digest("hex");
+  // The stored session is valid so this check exercises the signed token's expiry.
+  await db.query(
+    `INSERT INTO ${schema}.admin_sessions (token_hash, expires_at) VALUES ($1, now() + interval '5 minutes')`,
+    [expiredTokenHash],
+  );
   const expiredContext = await browser.newContext();
-  await expiredContext.addCookies([{ name: "crunchify_admin", value: `${expired}.${signature}`, url: base.origin }]);
+  await expiredContext.addCookies([{ name: "crunchify_admin", value: expiredToken, url: base.origin }]);
   const expiredPage = await expiredContext.newPage();
   const expiredAdmin = await expiredPage.request.get(`${base.origin}/admin`, { maxRedirects: 0 });
   assert.equal(expiredAdmin.status(), 307);
@@ -92,8 +118,8 @@ try {
   const unsupportedLogin = await page.request.post(`${base.origin}/api/admin/login`, { headers: { origin: base.origin, "content-type": "application/json" }, data: "{}" });
   assert.equal(unsupportedLogin.status(), 415);
   await page.goto(`${base.origin}/admin/login`);
-  await page.locator('[name="username"]').fill("localtest");
-  await page.locator('[name="password"]').fill("localtestpassword");
+  await page.locator('[name="username"]').fill(ADMIN_TEST_USER);
+  await page.locator('[name="password"]').fill(ADMIN_TEST_PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForURL("**/admin");
   const malformedId = "-".repeat(36);
@@ -102,13 +128,15 @@ try {
   assert.equal((await page.request.post(`${base.origin}/api/admin/inquiries/${malformedId}/retry`, { headers: { origin: base.origin } })).status(), 400);
   await page.goto(`${base.origin}/admin/inquiries/${id}`);
   await page.getByRole("button", { name: "Retry pending emails" }).click();
-  await page.getByText("Sender email: failed · Company email: failed").waitFor();
+  await page.getByText("Retry finished. Some emails still need attention.").waitFor();
+  assert.equal(await page.locator(".admin-email-card").getByText("Needs attention").count(), 2);
   await page.locator('[name="status"]').selectOption("contacted");
   await page.locator('[name="note"]').fill("Synthetic recovery note");
   await page.getByRole("button", { name: "Save changes" }).click();
-  await page.getByRole("heading", { name: "Change history" }).waitFor();
-  await page.getByText("Status: new → contacted").waitFor();
-  await page.getByText("Updated note: Synthetic recovery note").waitFor();
+  const changeHistory = page.locator(".change-history");
+  const updatedNotes = changeHistory.locator(".history-notes p").filter({ hasText: "Updated note" });
+  await changeHistory.getByText("Status changed from New to In progress.").waitFor();
+  await updatedNotes.filter({ hasText: "Synthetic recovery note" }).waitFor();
   const history = await db.query(`SELECT old_status, new_status, new_note FROM ${schema}.inquiry_history WHERE inquiry_id=$1`, [id]);
   assert.equal(history.rowCount, 1);
   assert.deepEqual(history.rows[0], { old_status: "new", new_status: "contacted", new_note: "Synthetic recovery note" });
@@ -119,10 +147,12 @@ try {
   const longNote = "界".repeat(5000);
   await page.locator('[name="note"]').fill(longNote);
   await page.getByRole("button", { name: "Save changes" }).click();
+  await updatedNotes.filter({ hasText: longNote }).waitFor();
   const unicodeUpdate = await db.query(`SELECT internal_note FROM ${schema}.inquiries WHERE id=$1`, [id]);
   assert.equal(unicodeUpdate.rows[0].internal_note, longNote);
   await page.locator('[name="note"]').fill("W".repeat(5000));
   await page.getByRole("button", { name: "Save changes" }).click();
+  await updatedNotes.filter({ hasText: "W".repeat(5000) }).waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, "Long history notes must not overflow mobile");
   const originalCookie = (await page.context().cookies()).find((cookie) => cookie.name === "crunchify_admin");
   assert.ok(originalCookie, "Admin session cookie missing");
@@ -156,6 +186,7 @@ try {
 } finally {
   if (id) await db.query(`DELETE FROM ${schema}.inquiries WHERE id=$1 AND details->>'company'=$2`, [id, company]);
   await db.query(`DELETE FROM ${schema}.inquiries WHERE details->>'company'=$1`, [partnerCompany]);
+  await db.query(`DELETE FROM ${schema}.admin_sessions WHERE token_hash=$1`, [expiredTokenHash]);
   await db.query(`DELETE FROM ${schema}.rate_limits WHERE key = ANY($1::text[])`, [[rateKey, browserKey, `admin:${browserKey}`]]);
   await db.end();
   await browser.close();

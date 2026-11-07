@@ -1,6 +1,6 @@
 # Crunchify — product story redesign
 
-Released to production on 6 November 2026 from `Frontend`, UI commit `8f4f02b`. See [PRODUCTION-RELEASE.md](PRODUCTION-RELEASE.md) for deployment, verification and rollback details.
+Released to production on 6 November 2026 from `Frontend`, UI commit `8f4f02b`. See [PRODUCTION-RELEASE.md](RELEASES-2026-11-06.md) for deployment, verification and rollback details.
 
 ## Design intent
 
@@ -92,4 +92,4 @@ Review widths 320, 390, 700, 701, 760, 768, 960, 1024 and 1440 pixels. Check the
 - Axe reported no selected WCAG 2.0/2.1/2.2 A/AA violations in 18 audited desktop/mobile screens and states. This does not replace physical-device or real screen-reader testing.
 - Lint, production build and all 16 existing integration checks passed. The browser review reported no uncaught page exceptions.
 - Saved 40 desktop/mobile screenshots, including four scroll-story moments, every page family, staff inbox/empty/detail samples, form success/retry and pending-notification states. Staff samples use clearly labeled fictional data rendered from the actual presentation components.
-- Gallery and screen images are generated under the ignored local `concepts/v4/` directory. `web/scripts/render-design-gallery.cjs` renders staff layout samples without database access; `web/tests/e2e/redesign-review.mjs` checks behavior and creates the complete screen gallery.
+- The V4 screenshots were saved under the ignored local `concepts/v4/` directory. The browser review used `web/tests/e2e/redesign-review.mjs`. The offline staff layout generator was retired after V5 changed the staff components and stylesheet.

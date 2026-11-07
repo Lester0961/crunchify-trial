@@ -7,7 +7,9 @@ import { deliverBrevo, type EmailContent } from "./brevo";
 import { inquiryConfirmation, inquiryNotification } from "./templates";
 
 type Inquiry = z.infer<typeof inquirySchema>;
-const productNames = Object.fromEntries(products.map(({ slug, name }) => [slug, name]));
+const productNames = Object.fromEntries(
+  products.map(({ slug, name }) => [slug, name]),
+);
 
 export async function sendEmails(
   data: Inquiry,
@@ -27,7 +29,10 @@ export async function sendEmails(
     only.company
       ? send(
           INQUIRY_NOTIFICATION_TO,
-          inquiryNotification(data, formatInquiryDetails(data, data.type, productNames)),
+          inquiryNotification(
+            data,
+            formatInquiryDetails(data, data.type, productNames),
+          ),
           `company/${data.submissionId}`,
         )
       : false,

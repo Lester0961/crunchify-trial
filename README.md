@@ -1,9 +1,19 @@
-# Crunchify wholesale website trial
+# Crunchify wholesale trial
 
-The Next.js application is in [`web/`](web/). A current deployment is available at [crunchify.vercel.app](https://crunchify.vercel.app/), with staff sign-in at `/admin/login`. The private repository and its deployment services are configured; this remains a trial awaiting company review and acceptance.
+Browse the four Crunchify snacks, request wholesale information, or send a brand and media inquiry. Staff can review and follow up on inquiries in the admin inbox.
 
-Start with the [application setup guide](web/README.md), the [handover](docs/HANDOVER.md), and the [remaining-work checklist](docs/REMAINING-WORK-CHECKLIST.md). The [requirements tracker](docs/REQUIREMENTS-TRACEABILITY.md) distinguishes implemented features from outstanding client inputs. The original agreement, dossier and the company's written feedback govern acceptance; a completed technical task does not by itself establish that a bonus was awarded.
+[Live website](https://crunchify.vercel.app/) · [Wholesale form](https://crunchify.vercel.app/inquire) · [Staff sign-in](https://crunchify.vercel.app/admin/login)
 
-The company sender and notification address, public contact details, full brand fonts, approved privacy wording, final feedback and several operational decisions are still pending. The current email setup uses the user's authorized temporary address. The optional VPS migration was deferred until a company-approved server is available. See the checklist and [VPS runbook](docs/VPS-MIGRATION.md) for the full status.
+## Review the trial
 
-The local `reference/` and wireframe concept folders are ignored by Git and may not be present in a fresh checkout. The application assets needed for the site are in the private repository. Do not commit credentials, database backups or customer inquiries; share source materials and access only through the agreed handover.
+- Browse the product catalog and open a product page to request a quote.
+- Send a wholesale or brand and media inquiry. Each form saves the inquiry and sends a confirmation and a team notification.
+- In the staff inbox, search or filter inquiries, then open a record to update its status or add a note.
+
+The trial uses a temporary email setup. The [trial status](docs/REQUIREMENTS-TRACEABILITY.md) lists the delivered work, test evidence, and company inputs still pending. VPS migration is excluded from this trial.
+
+## Work on the project
+
+The Next.js application is in [web](web/). See the [setup guide](web/README.md) for the database and test commands, the [handover](docs/HANDOVER.md) for staff operations, and the [release notes](docs/PRODUCTION-RELEASE.md) for the live version.
+
+[Earlier plans and test reports](docs/archive/README.md)
