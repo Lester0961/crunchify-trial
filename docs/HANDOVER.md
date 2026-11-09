@@ -2,7 +2,7 @@
 
 [Live site](https://crunchify.vercel.app/) · [Staff sign-in](https://crunchify.vercel.app/admin/login) · [Source repository](https://github.com/Lester0961/crunchify-trial)
 
-The repository is private. Mathew’s GitHub access is pending his account details. Share staff credentials separately from the repository.
+The repository is public for trial review. Share staff credentials separately from the repository.
 
 ## Work with an inquiry
 
